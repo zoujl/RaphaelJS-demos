@@ -1,0 +1,151 @@
+<!DOCTYPE HTML>
+<html> 
+<head> 
+    <meta charset="utf-8"/> 
+    <title>斗破历程 在此启航  -《斗破苍穹OL》官方网站</title>
+    <meta name="keywords" content="斗破,斗破苍穹,斗破苍穹OL,斗破历程,斗破BOSS">
+    <meta name="description" content="这里汇聚了众多强悍的BOSS，邪恶小医仙、穆兰三老、云山…这些耳熟能详的名字都将成为你晋阶路上的考验，你准备好面对他们了么？" />
+    <meta name="author" content="Design:Che Weichun, Layout:ZouJL"/>
+    <link type="image/x-icon" href="http://dpol.changyou.com/favicon.ico" rel="icon"/>
+    <link type="image/x-icon" href="http://dpol.changyou.com/favicon.ico" rel="shortcut icon" />
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="css/index.css" />
+</head>
+<body>
+    
+<div id="content">
+    <h1 class="seoTxt">斗破历程，在此启航</h1>
+    <p class="seoTxt">让我们一起跟随斗破的脚步共同成长</p>
+    
+    <div class="dpol_logo_lk">
+        <a href="http://dpol.changyou.com/main.shtml" target="_blank" title="斗破苍穹OL官方网站">斗破苍穹OL官方网站</a>
+    </div>
+    <div class="dpol_logo_bg"></div>
+
+    <div class="links">
+        <a href="http://dpol.changyou.com/main.shtml" target="_blank" title="官网首页">官网首页</a>
+        |
+        <a href="http://member.changyou.com/register/regPhoneSmAction.do?gametype=PE-DPCQ" target="_blank" title="注册账号">注册账号</a>
+        |
+        <a href="http://dpol.changyou.com/download/index.shtml" target="_blank" title="下载游戏">下载游戏</a>
+    </div>
+
+    <div class="share">
+        <div class="title">分享</div>
+        <div id="target"></div>
+    </div>
+
+    <div id="raphael-wrap">
+        <div id="activate"></div>
+        <div id="anchor"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+(function(){
+    var option = "{ name:'dpcq',skins:[0,'dark',0]}";
+    var script = document.createElement('script');
+    script.setAttribute('type', 'text/javascript');
+    script.setAttribute('src', 'http://www.changyou.com/js/cyou_public.js');
+    script.setAttribute('id', 'cyou_public_js');
+    script.setAttribute('options', option);
+    document.getElementsByTagName('head')[0].appendChild(script);   
+})();
+</script>
+<script src="js/jquery-1.7.1.min.js"></script>
+<script src="js/raphael-min.js"></script>
+<script src="js/anchor.js"></script>
+<script>
+$(function(){
+
+    var imgs = [
+        {
+            width: 542
+            , height: 385
+            , img: 'images/a6.png'
+            , left: 53
+            , top: 0
+            , txt: '文案0'
+            , href: 'boss-detail.shtml?idx=6'
+        }, {
+            width: 805
+            , height: 342
+            , img: 'images/a0.png'
+            , left: 494
+            , top: 0
+            , txt: '文案1'
+            , href: 'boss-detail.shtml?idx=0'
+        }, {
+            width: 706
+            , height: 290
+            , img: 'images/a1.png'
+            , left: 946
+            , top: 0
+            , txt: '文案2'
+            , href: 'boss-detail.shtml?idx=1'
+        }, {
+            width: 590
+            , height: 454
+            , img: 'images/a2.png'
+            , left: 138
+            , top: 369
+            , txt: '文案3'
+            , href: 'boss-detail.shtml?idx=2'
+        }, {
+            width: 848
+            , height: 414
+            , img: 'images/a5.png'
+            , left: 781
+            , top: 290
+            , txt: '文案4'
+            , href: 'boss-detail.shtml?idx=5'
+        }, {
+            width: 576
+            , height: 326
+            , img: 'images/a3.png'
+            , left: 134
+            , top: 730
+            , txt: '文案5'
+            , href: 'boss-detail.shtml?idx=3'
+        }, {
+            width: 584
+            , height: 336
+            , img: 'images/a4.png'
+            , left: 387
+            , top: 720
+            , txt: '文案6'
+            , href: 'boss-detail.shtml?idx=4'
+        }, {
+            width: 885
+            , height: 502
+            , img: 'images/a7.png'
+            , left: 734
+            , top: 554
+            , txt: '文案7'
+            , href: 'boss-detail.shtml?idx=7'
+        }
+    ];
+
+    var path = [
+        'M428,0L190,0L594,211L452,356L54,385L428,0Z'
+        , 'M865,0L918,0L1298,287L496,340L865,0Z'
+        , 'M945,0L1651,0L1299,287L945,0Z'
+        , 'M454,373L725,713L140,825L454,373Z'
+        , 'M1302,293L1630,540L780,702L1302,293Z'
+        , 'M136,828L712,732L350,1056L202,1056L136,828Z'
+        , 'M733,718L970,1056L390,1056L733,718Z'
+        , 'M736,716L1618,556L1258,1056L990,1056L736,716Z'
+    ];
+
+    $('#anchor').anchor({
+        width : 1652,
+        height: 1056,
+        tips  : imgs,
+        path  : path
+    }); 
+        
+});
+</script>
+</body>
+</html>

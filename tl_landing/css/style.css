@@ -1,0 +1,125 @@
+/* Begain Here */
+.button-loader,
+.button-loader a{
+    width: 200px;
+    height: 200px;
+    display: block;
+    overflow: hidden;
+    position: relative;
+}
+.button-loader{    
+    background: url(../images/59seconds.png) 0 0 no-repeat;
+}
+.button-loader a{
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    text-indent: -9999em;
+}
+#loader{
+    width: 200px;
+    height: 200px;
+}
+
+#slide-nav,
+.slide-shadow div {
+    width: 978px;
+    height: 88px;
+    background-image: url(../images/nav_bg.png);
+    background-repeat: no-repeat;
+}
+
+#slide-nav {
+    position: relative;
+    background-position: 0 0;
+}
+
+.slide-shadow,
+.slide-shadow div {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 325px;
+    height: 88px;
+    background-position: 0 -89px;
+}
+
+.slide-shadow {
+    overflow: hidden;
+}
+
+.slide-shadow div {
+    width: 978px;
+}
+
+.nav {
+    list-style: none;
+    width: 100%;
+    height: 88px;
+}
+
+.nav li,
+.nav span {
+    display: block;
+    float: left;
+    width: 325px;
+    height: 88px;
+}
+
+.nav li {
+    position: relative;
+    padding-right: 1px;
+    cursor: pointer;
+}
+
+.nav span {
+    text-indent: -9999em;
+}
+
+.nav i {
+    display: block;
+    position: absolute;
+    top: 29px;
+    right: 5px;
+    width: 32px;
+    height: 31px;
+    background: url(../images/arrow.png) left top no-repeat;
+    filter: alpha(opacity=0);
+    opacity: 0;
+}
+
+#slide-content {
+    width: 978px;
+    margin: 60px 0;
+}
+
+.feature {
+    position: relative;
+    width: 977px;
+}
+
+.feature .default {
+    width: 975px;
+    height: 271px;
+    margin: 0 auto;
+    background: url(../images/feature.jpg) left top no-repeat;
+}
+
+#anchor{
+    width: 975px;
+    height: 272px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2
+}
+
+#activate{
+    position: absolute;
+    left: -11px;
+    top: -34px;
+    width: 1002px;
+    height: 331px;
+    z-index: 1;
+}

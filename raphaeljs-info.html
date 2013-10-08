@@ -1,0 +1,1920 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>svg要素の基本的な使い方まとめ</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+<link rel="stylesheet" type="text/css" href="./svgMemo.css"/>
+<link rel="shortcut icon" href="favicon.png"/>
+<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="raphael-min.js"></script>
+<script type="text/javascript" src="svgMemo.js"></script>
+<script type="text/javascript">
+"use strict";
+</script>
+</head>
+<body style="display:none;">
+
+<header>
+	<h1 class="title">SVG元素的基本使用综述</h1>
+</header>
+
+<section>
+	<h1>Raphaël矢量图形</h1>
+
+	<article>
+		<p>
+		svgの持つ標準apiを使うだけでもそれなりの処理を行うことができるが，<a href="http://raphaeljs.com/">Raphaël—JavaScript Library</a>を用いることでsvgが動作しないieにおいても擬似的にsvgを描画できるようになる．また，svgを描画する目的であっても非常に優秀である．ここではRaphaëlの使い方について紹介する．なお，執筆時のバージョンは2.1.0のため，最新の情報については配布サイトを参照されたい．※このページではRaphaëlの動作サンプルを掲載しています．記述されているコードを実際に動作させているため，若干ロードが遅いのでご注意下さい．なお，ie8ではvmlでの動作が確認できます．
+		</p>
+	</article>
+
+	<article>
+	<h2>Raphaëlの機能</h2>
+	<p>
+	Raphaëlはwebブラウザでベクタグラフィックを記述する為のjavascriptライブラリであり，html文書内部での利用を想定している．MIT Licenseで配布されているため，ライセンス的にも利用しやすい．ここでsvgと限定していないのは，ベクタ画像を出力するためにブラウザにより出力形式を<b>svgとvml（internet explorerの場合）とに自動的に振り替えている</b>ためである．この動作のためプログラマーはブラウザの種類を意識すること無く，単一のインターフェースを操作するだけで済む．従って，Raphaëlがサポートする機能は基本的にsvgとvmlの共通部分をベースとしているが，独自に実装している機能は驚くほど強力である．
+	</p>
+	<ul>
+	<li>基本図形の描画</li>
+	<li>グラデーションの設定</li>
+	<li>図形要素の管理</li>
+	<li>ラスタ画像の挿入</li>
+	<li>テキストの挿入</li>
+	<li>アニメーションの実行</li>
+	<li>イベントの捕捉</li>
+	</ul>
+	<p>以下はRaphaëlが独自に提供している機能だ．</p>
+	<ul>
+	<li>簡略化されたマーカー・線の装飾</li>
+	<li>強力な図形変換処理（ベジェ曲線の変換，分割，描画領域の取得など）</li>
+	<li>強力な色の変換処理（rgb，hsb，hsl色空間のサポート）</li>
+	<li><a href="https://github.com/sorccu/cufon/wiki/about">Cufón</a>形式のフォント描画</li>
+	<li><a href="https://github.com/DmitryBaranovskiy/eve">eve</a>による柔軟なカスタムイベント処理</li>
+	<li>汎用的なメソッドの提供</li>
+	</ul>
+	<p>svgの持つクリップ・マスク操作，フィルター操作等の画像の合成に関わるものは簡易的な物を除いて利用できないが，それを補って余りある機能を有しているのだ．また，一般に冗長となりがちなsvgdom操作ではあるが，Raphaëlを用いることでjsonを用いた図形の一括指定が出来るようになるなど，javascriptの持つ強力な構文機構を利用して<b>簡潔にコード記述できるようになる</b>．従って，Raphaëlを<b>svgを描画する為のライブラリとして利用することも出来る</b>．</p>
+	<p>注意すべき点としてはRaphaëlが<b>既存のsvg要素の内容にアクセスする機能は持っていない</b>点である．従って，illastrator等で描画した内容をそのままRaphaëlで読み込むと言った用途には向かず，もっぱらグラフやダイアグラムを動的に作るといった場面で威力を発揮することとなるだろう．なお，ユースケース的には十分に有り得るため，有志により<a href="https://github.com/wout/raphael-svg-import">raphael-svg-import</a>と言ったプラグインや，<a href="http://webtech-walker.com/archive/2010/09/05184807.html">SVG2Raphael</a>といったものが提供されている．本項でもxslを使った簡単な変換ツールを紹介する．</p>
+
+	</article>
+	<article>
+	<h2>Raphaëlの構成</h2>
+	<p>
+	Raphaëlが提供しているオブジェクトは次の8つである．数が少ないので，それほど複雑ではない．</p>
+	<ul>
+	<li>Raphaelオブジェクト<br/>
+	Raphaëlを構成する最も基本となるオブジェクトである．ベクタグラフィックの描画領域の定義の他，各種ユーティリティ機能を提供する．
+	</li>
+	<li>Paperオブジェクト<br/>
+	ベクタグラフィックを描画する領域を表すオブジェクトであり，svgにおけるsvg要素に相当する．図形を描画するための機能を提供する．</li>
+	<li>Elementオブジェクト<br/>
+	基本図形を表すオブジェクトであり，色や，見た目の制御を行う為のapiを提供する．</li>
+	<li>Setオブジェクト<br/>
+	基本図形のグループ化を表すオブジェクトであり，スタイル属性の一括設定や，様々な配列操作を提供する．</li>
+	<li>Animateオブジェクト<br/>
+	図形に対するアニメーションを定義するオブジェクト．</li>
+	<li>Matrixオブジェクト<br/>
+	transform処理を行う際の行列演算をサポートする機能を提供する．</li>
+	<li>eveオブジェクト<br/>
+	カスタムイベントを定義・実行するライブラリ．</li>
+	<li>fontオブジェクト<br/>
+	Cufón形式のフォントデータを格納するオブジェクト．</li>
+	</ul>
+	<p>オブジェクトの相関を表すと次のようになる．</p>
+	<object data="raphael.svg" type="image/svg+xml" style="display:block;margin:0 auto;width:502px;height:287px;"></object>
+
+	</article>
+	<article>
+	<h2>Raphaëlによるグラフィックの描画手順</h2>
+	<p>
+	Raphaëlを利用するには他のjavascriptライブラリと同様にhtmlのheader要素内部で</br>
+	「<code>&lt;script type="text/javascript" src="raphael-min.js"&gt;&lt;/script&gt;</code>」</br>と記述する．jQueryとの併用も可能だが，組み合わせて利用するケースは殆ど無いと思われる．
+	</p>
+	<p>
+	グラフィックを描画する手順は次のとおりである．
+	</p>
+	<ol>
+	<li>グラフィックを描画したい部分をdiv要素で定義しておく．</li>
+	<li>このdiv要素を元にpaperオブジェクトを取得する．</li>
+	<li>paperオブジェクトを元に図形オブジェクトを生成する．</li>
+	<li>図形オブジェクトに対してスタイルを設定する．</li>
+	</ol>
+	<p>下の例はidにcanvas1を持つdiv要素にグラフィックを描いた例である．</p>
+		<div id="canvas1" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas1", 200, 200);
+				//下記のようにHTMLDivElementを渡しても良い．
+				//var paper = Raphael(document.getElementById("canvas1"), 200, 200);
+				var circle = paper.circle(100, 100, 80);
+				circle.attr("fill", "#f00");
+				circle.attr("stroke", "orange");
+				circle.attr("stroke-width", 10);
+			});
+			</script></div>
+	<p>
+	グラフィック描画メソッドとしてsvgが選択された場合，このdiv要素内部にsvg要素が配置される．一方vmlが選択された場合，vmlは明確なコンテナ要素を持たないため，div要素に直接vmlの各種要素が配置される．cssでの見た目を調整する場合はsvg要素にはスタイルを設定しないほうが無難であろう．なお，div要素を指定せず，body要素における絶対位置で指定する方法もある．また，Raphaelにファンクションオブジェクトを登録することで，jQueryと同様にdomの解析が完了したタイミングで処理を実行することが出来る．</p>
+	<dl><dt>Raphael</dt>
+		<dd>document.ready時に処理を実行する．Raphael(func)</dd>
+		<dd>Paperオブジェクトを生成する（div要素に描画する）．Raphael(targetDivId, width, height)※HTMLDivElementを渡しても良い．</dd>
+		<dd>Paperオブジェクトを生成する（body要素に直接描画する）．Raphael(x, y, width, height)</dd>
+	</dl>
+	<p>以下，Raphaëlの使い方についてひと通り解説するが，いかんせん統一された情報に乏しく，公式配布サイトの<a href="http://raphaeljs.com/reference.html">api表</a>も御世辞にも親切とは言えない．従って筆者独自の解釈が多分に含まれており，実際の設計思想と異なる場合があることを予めお詫びする．なお，公式サイトにおいては具体的な応用例について多数公開されており，ある程度まではその思想を汲むことは可能である．なお，ライブラリの不具合により正常に動作しないものもあるので注意のこと．</p>
+	</article>
+
+	<article>
+	<h2>カンバスサイズ・ビューボックスの設定</h2>
+	<p>Paperオブジェクトにはベクタグラフィックスの表示範囲を定義する関数setViewBoxが定義されている．これはsvgにおけるviewBoxに相当する機能である．</p>
+	<dl>
+	<dt>Paper.setViewBox</dt>
+		<dd>グラフィックの表示範囲の指定．<br/>
+		setViewBox(x,y,width,height,fit)（falseの場合左上を基準とする．trueの場合引き伸ばされる．）※古いfirefoxでは正しく動作しない</dd>
+	</dl>
+		<div id="canvas1_1" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas1_1", 200, 200);
+				paper.setViewBox(0,0,300,200,true);
+				var rect = paper.rect(0,0,300,200);
+				var circle = paper.circle(100, 100, 80);
+				circle.attr("fill", "#f00");
+				circle.attr("stroke", "orange");
+				circle.attr("stroke-width", 10);
+			});</script></div>
+		<div id="canvas1_1_2" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas1_1_2", 200, 200);
+				paper.setViewBox(0,0,300,200,false);
+				var rect = paper.rect(0,0,300,200);
+				var circle = paper.circle(100, 100, 80);
+				circle.attr("fill", "#f00");
+				circle.attr("stroke", "orange");
+				circle.attr("stroke-width", 10);
+			});</script></div>
+	<p>また，setSizeメソッドでカンバスのサイズを後から変更することも出来る．※下の例ではsvg要素におけるスタイル値が有効となっているので，見た目大きさが変わっていません．</p>
+	<dl>
+	<dt>Paper.setSize</dt>
+		<dd>描画カンバスの大きさを変更する．setSize(width,height)</dd>
+	</dl>
+		<div id="canvas1_2" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas1_2", 200, 200);
+				paper.setSize(300,300);
+				var circle = paper.circle(100, 100, 80);
+				circle.attr("fill", "#f00");
+				circle.attr("stroke", "orange");
+				circle.attr("stroke-width", 10);
+			});
+			</script></div>
+	<p>Raphael.setWindowメソッドを用いるとフレームを跨いだ描画も可能だ．iframeのもつcontentWindowオブジェクトを渡すことで，iframe内のdiv要素に図形を描画することが出来る．</p>
+	<dl>
+	<dt>Raphael.setWindow</dt>
+		<dd>ベクタグラフィックの描画対象をiframeにする．setWindow(iframe.contentWindow)</dd>
+	</dl>
+			<div id="iframe" class="Raphael">
+			<iframe id="raphael_iframe" style="background-color:white;float:left;width:200px;height:200px;border:black outset 2px;"></iframe>
+			<script type="text/javascript">Raphael(function(){
+				try{
+					var iframe = document.getElementById("raphael_iframe");
+					iframe.contentWindow.document.body.innerHTML = "iframe";
+					//描画対象のウインドウを変更する．
+					Raphael.setWindow(iframe.contentWindow);
+					var paper = Raphael(0,0, 200, 200);
+					var circle = paper.circle(100, 100, 80);
+					circle.attr("fill", "#f00");
+					circle.attr("stroke", "orange");
+					circle.attr("stroke-width", 10);
+				}catch(e){
+
+				}finally{
+					//描画対象のウインドウを元に戻す．
+					Raphael.setWindow(window);
+				}
+			});</script></div>
+
+	</article>
+
+
+	<article>
+	<h2>基本図形の描画</h2>
+	<p>Paperオブジェクトには各種図形を生成するメソッドが提供されている．</p>
+	<dl><dt>図形オブジェクトを生成するメソッド</dt>
+		<dd>実行するとElementオブジェクトを生成する．
+			<dl>
+				<dt>Paper.circle</dt>
+					<dd>円を描画する．circle(x,y,r)</dd>
+				<dt>Paper.ellipse</dt>
+					<dd>楕円を描画する．ellipse(x,y,rx,ry)</dd>
+				<dt>Paper.image</dt>
+					<dd>ラスタ画像を描画する．image(src,x,y,width,height)</dd>
+				<dt>Paper.path</dt>
+					<dd>パスを描画する．path([pathString:d操作の内容])</dd>
+				<dt>Paper.rect</dt>
+					<dd>矩形を描画する．rect(x,y,width,height)</dd>
+				<dt>Paper.text</dt>
+					<dd>文字列を描画する（初期設定：中央揃え）．text(x,y,text)</dd>
+			</dl>
+		</dd>
+	</dl>
+		<div id="canvas2" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas2", 200, 200);
+				//円
+				var circle = paper.circle(50,50,25);
+				circle.attr("fill", "red");
+				//楕円
+				var ellipse = paper.ellipse(150,50,40,25);
+				ellipse.attr("fill", "orange");
+				ellipse.attr("href", "#");
+				//ラスタ画像
+				var image = paper.image("img.png", 10,80,100,50);
+				//線（パス）
+				var path = paper.path("M 120,80 L 180,120");
+				path.attr("stroke-dasharray","-");
+				//矩形
+				var rect = paper.rect(20,160,50,30);
+				rect.attr("r", 5);
+				//文字列（\nで改行することも出来る．）
+				var text = paper.text(130,170,"It's Raphaël!\nとても便利!")
+					.attr({"font-size":20, fill:"none" , stroke: "blue"});
+			});</script></div>
+	<p>生成した図形オブジェクト（Elementオブジェクト）に，attrメソッドで属性を設定していく．引数としてjson形式の設定情報を渡すこともできるが，jQueryと異なりcamel形式での指定はできない．つまり「stroke-width」を設定する場合は，キー文字列として「strokeWidth」を使用することは出来ず，二重引用符で囲った"stroke-width"を指定する必要がある．図形オブジェクトに設定可能な属性は次の通りである．図形要素によって有効な属性が異なる．またRaphaël独自の記述法が存在するものは後ほど解説する．</p>
+	<dl>
+	<style>
+	sup{
+		line-height:0px;
+	}
+	</style>
+	<dt>Element.attr</dt>
+		<dd>属性値の設定/取得．attr([属性値名],[設定値])もしくはattr(json)で値の設定．attr([属性値名])で値の取得．<br/>
+			【図形の描画基準座標に関わる属性】※†付きはRaphaël独自の記述法で行うもの．
+			<dl style="border-bottom:dashed 1px black;">
+				<dt>x,y</dt>
+					<dd>図形の描画基準座標．テキストの描画基準座標．</dd>
+				<dt>width</dt>
+					<dd>図形の幅．</dd>
+				<dt>height</dt>
+					<dd>高さ．</dd>
+				<dt>cx,cy</dt>
+					<dd>円・楕円の中心．</dd>
+				<dt>r</dt>
+					<dd>円の半径及び矩形の四隅の丸め半径．</dd>
+				<dt>rx,ry</dt>
+					<dd>楕円の半径．<b>矩形の四隅の丸めには対応していない</b>．</dd>
+			</dl>
+			【パス専用の属性】
+			<dl style="border-bottom:dashed 1px black;">
+				<dt>path<sup>†</sup></dt>
+					<dd>パスを定義する操作．svgにおけるpath要素のd操作に相当する．</dd>
+				<dt>arrow-end<sup>†</sup></dt>
+					<dd>パスの終点マーカー．[スタイル]-[幅（narrow/midium/wide）]-[長さ（short/midium/long）]</dd>
+				<dt>arrow-start<sup>†</sup></dt>
+					<dd>パスの始点マーカー．[スタイル]-[幅（narrow/midium/wide）]-[長さ（short/midium/long）]</dd>			
+			</dl>
+			【塗りつぶしに関わる属性】
+			<dl style="border-bottom:dashed 1px black;">
+				<dt>fill<sup>†</sup></dt>
+					<dd>塗りつぶしの色．</dd>
+				<dt>fill-opacity</dt>
+					<dd>塗りつぶしの不透明度．（1で不透明，0で透明）</dd>
+			</dl>
+			【線の描画に関わる属性】
+			<dl style="border-bottom:dashed 1px black;">
+				<dt>stroke<sup>†</sup></dt>
+					<dd>線の色．</dd>
+				<dt>stroke-dasharray<sup>†</sup></dt>
+					<dd>破線の設定．独自形式での指定．例「- 」</dd>
+				<dt>stroke-linecap</dt>
+					<dd>線の端点のスタイル．（butt無し|round丸め|square四角）</dd>
+				<dt>stroke-linejoin</dt>
+					<dd>線の頂点のスタイル．（miter角|round丸め|bevel面取り）</dd>
+				<dt>stroke-miterlimit</dt>
+					<dd>線の頂点の尖りの上限値．</dd>
+				<dt>stroke-opacity</dt>
+					<dd>線の不透明度．（1で不透明，0で透明）</dd>
+				<dt>stroke-width</dt>
+					<dd>線の太さ．</dd>
+			</dl>
+			【テキストの描画に関わる属性】
+			<dl style="border-bottom:dashed 1px black;">
+				<dt>text<sup>†</sup></dt>
+					<dd>テキストの内容．\nで改行も可能．</dd>
+				<dt>text-anchor</dt>
+					<dd>テキスト描画の基準．</dd>
+				<dt>font</dt>
+					<dd>フォントの設定．</dd>
+				<dt>font-family</dt>
+					<dd>フォントファミリーの設定．</dd>
+				<dt>font-size</dt>
+					<dd>フォントの大きさ．</dd>
+				<dt>font-weight</dt>
+					<dd>フォントの太さ．</dd>
+			</dl>
+			【図形の描画に関わる属性】
+			<dl style="border-bottom:dashed 1px black;">
+				<dt>blur</dt>
+					<dd>図形のぼかし幅．</dd>
+				<dt>clip-rect<sup>†</sup></dt>
+					<dd>図形の描画を制限する範囲．x,y,width,height</dd>
+				<dt>opacity</dt>
+					<dd>図形の不透明度．（1で不透明，0で透明）</dd>
+				<dt>transform<sup>†</sup></dt>
+					<dd>図形の変形．独自記述．</dd>
+			</dl>
+			【リンクに関わる属性とその他の属性】
+			<dl>
+				<dt>cursor</dt>
+					<dd>カーソルの指定．</dd>
+				<dt>href</dt>
+					<dd>図形クリックした際のリンク先．</dd>
+				<dt>src</dt>
+					<dd>ラスタ画像の参照先url．</dd>
+				<dt>target</dt>
+					<dd>リンクの表示先設定．（_top|_blank|[name]）</dd>
+				<dt>title</dt>
+					<dd>図形のタイトル．</dd>
+			</dl>
+	</dd>
+	<dt>Element.type</dt>
+		<dd>図形オブジェクトのタイプ．circle，ellipse，image，path，rect，textの何れかが設定される．</dd>
+	</dl>
+
+	</article>
+	<article>
+	<h2>図形の一括指定とSetオブジェクト</h2>
+	<p>図形の描画，プロパティの設定はaddメソッドで簡略化することが出来る．</p>
+	<dl>
+	<dt>Paper.add</dt>
+		<dd>図形を一括描画する．Setオブジェクトを返す．add([json notation])．</dd>
+	</dl>
+		<div id="canvas3" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas3", 200, 200);
+				//addメソッドではjson形式での一括指定が可能．
+				paper.add([
+					{
+						type: "rect",
+						x: 0,
+						y: 0,
+						width: 200,
+						height: 200,
+						fill: "yellow"
+					},
+					{
+						type: "circle",
+						cx: 70,
+						cy: 70,
+						r: 50,
+						fill: "red"
+					},
+					{
+						type: "rect",
+						x: 80,
+						y: 80,
+						width: 80,
+						height: 80,
+						fill: "blue",
+						"fill-opacity": 0.5
+					}
+				]);
+			});</script></div>
+	<p>addメソッドを実行すると，その処理結果としてSetオブジェクトが返される．このオブジェクトに施した操作は，内部の画像要素の全てに適用される．Setオブジェクトを生成する方法としては，<span class="list"><span>Paper.setメソッドを実行する</span><span>Paper.addメソッドを用いる</span><span>Paper.setStartメソッドを実行した後で，Paper.setFinishメソッドを実行する</span></span>の何れかを行う．Setオブジェクトは一見svgのg要素によるグループ化に似ているものの，あくまで<b>スクリプト処理の簡略化を目的とした機構</b>である．Raphaëlが生成するdomは，<b>全ての図形要素が同じ階層に存在するフラットな構造</b>をとる．</p>
+	<dl>
+	<dt>Paper.set</dt>
+		<dd>Setオブジェクトを生成する．set()．引数に図形オブジェクトを渡すことも可能．</dd>
+	<dt>Paper.setStart</dt>
+		<dd>Setオブジェクトの開始を宣言する．setStart()．</dd>
+	<dt>Paper.setFinish</dt>
+		<dd>Setオブジェクトを取得する．setStartメソッド以降，Paperオブジェクトで描画した図形要素のリストを取得する．setFinish()．</dd>
+	<dt>Set.attr</dt>
+		<dd>Set内部の図形要素に一括で属性値を設定する．</dd>
+	<dt>Set.type</dt>
+		<dd>文字列「Set」が設定されている．</dd>
+	</dl>
+			<div id="canvas3_1" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas3_1", 200, 200);
+				var set = paper.add([
+					{type: "circle",cx: 70,cy: 70,r: 50},
+					{type: "rect",x: 80,y: 80,width: 80,height: 80}
+				]);
+				set.attr("fill", "red");
+			});</script></div>
+	<h3>Setオブジェクトのもつメソッド</h3>
+	<p>Setオブジェクトにはその他リスト操作に関わるメソッドが提供されている．</p>
+	<dl>
+	<dt>Set.clear</dt>
+		<dd>中身を空にする．</dd>
+	<dt>Set.exclude</dt>
+		<dd>指定した図形オブジェクトを削除する．</dd>
+	<dt>Set.forEach</dt>
+		<dd>Setオブジェクトに属する全ての図形オブジェクトに処理を行う．forEach(callback,thisArg)．callback関数内でfalseを返すとループ処理が終了する．thisArgはcallback関数内部においてthis変数から参照できる．</dd>
+	<dt>Set.pop</dt>
+		<dd>図形オブジェクトをポップする．</dd>
+	<dt>Set.push</dt>
+		<dd>図形オブジェクトを追加する．</dd>
+	<dt>Set.splice</dt>
+		<dd>図形オブジェクトを入れ替える．splice(index,count,[挿入する図形オブジェクト])．</dd>
+	<dt>Set.items</dt>
+		<dd>内部の図形オブジェクトの配列．</dd>
+	<dt>Set.length</dt>
+		<dd>内部の図形オブジェクトの数．</dd>
+	<dt>Set.clone</dt>
+		<dd>Setオブジェクトを複製する．</dd>
+	</dl>
+	<p>forEachメソッドの例を示す．</p>
+		<div id="canvas3_2" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas3_2", 200, 200);
+				var set = paper.add([
+					{type: "circle",cx: 70,cy: 70,r: 50},
+					{type: "rect",x: 80,y: 80,width: 80,height: 80}
+				]);
+				set.forEach(function(elem, i){//このように引数経由で図形要素とインデックスが渡される
+					if(i == 0){
+						elem.attr("fill", this.color_A);
+					}else{
+						elem.attr("fill", this.color_B);
+					}
+				},{color_A:"green", color_B:"blue"});
+			});</script></div>
+	<p>同様の機能はPaperオブジェクトにも定義されている．</p>
+	<dl>
+	<dt>Paper.forEach</dt>
+		<dd>Paperオブジェクトに属する全ての図形オブジェクトに処理を行う．</dd>
+	</dl>
+	</article>
+
+	<article>
+	<h2>色の指定方法</h2>
+	<p>Raphaëlではhtml定義色やrgb関数による指定の他，様々な方法で色を設定することが出来るため，柔軟な色の指定が可能となっている．色相は360°に対する割合で，彩度・明度・輝度は0〜1の割合で指定する．色相角に対応しているため，やや力技ではあるが，円環状のグラデーションを実現できる．</p>
+			<div id="canvas9_2" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas9_2", 200, 200);
+				var i;
+				for(var i = 0; i<144; i++){
+					paper.path("M 97,0 h 6 L 101,101 L 99,101 z").attr({
+						//ちょっとずつ色を変化させ，重ねていく．
+						fill: "270-hsb("+i/144+",1,1):25%-white:75%",
+						stroke:"none",
+						"stroke-width": 0,
+						transform: "r" + (360/144*i) + ",100,100"
+					});
+				};
+			});</script></div>
+	<dl>
+	<dt>color name</dt>
+		<dd>htmlで定められている色名称</dd>
+	<dt>#fff/#ffffff</dt>
+		<dd>16進数指定</dd>
+	<dt>rgb(,,)</dt>
+		<dd>rgb形式</dd>
+	<dt>rgba(,,,)</dt>
+		<dd>rgba形式</dd>
+	<dt>hsb(,,)</dt>
+		<dd>hsb色空間（色相Hue・彩度Saturation・明度Valueでの指定）</dd>
+	<dt>hsba(,,,)</dt>
+		<dd>hsb色空間（色相Hue・彩度Saturation・明度Value＋不透明度Alphaでの指定）</dd>
+	<dt>hsl(,,)</dt>
+		<dd>hsl色空間（色相Hue・彩度Saturation・輝度Luminanceでの指定）</dd>
+	<dt>hsla(,,,)</dt>
+		<dd>hsl色空間（色相Hue・彩度Saturation・輝度Luminance＋不透明度Alphaでの指定）</dd>
+	</dl>
+
+	<h3>色の相互変換</h3>
+	<p>Raphaelオブジェクトではこれらの色空間の記述形式を相互に変換するメソッドを提供している.</p>
+	<dl>
+	<dt>Raphael.getRGB</dt>
+		<dd>色の名称/記法からrgb色空間の色{r,g,b,hex,error}に変換する．getRGB(color)</dd>
+	<dt>Raphael.hsb</dt>
+		<dd>hsb色空間の色を16進表記の色に変換する．hsb(h,s,b)</dd>
+	<dt>Raphael.hsb2rgb</dt>
+		<dd>hsb色空間の色をrgb色空間での値{r,g,b,hex}に変換する．hsb2rgb(h,s,b)</dd>
+	<dt>Raphael.hsl</dt>
+		<dd>hsl色空間の色を16進表記の色に変換する．hsl(h,s,l)</dd>
+	<dt>Raphael.hsl2rgb</dt>
+		<dd>hsl色空間の色をrgb色空間での値{r,g,b,hex}に変換する．hsl2rgb(h,s,l)</dd>
+	<dt>Raphael.rgb</dt>
+		<dd>rgb色空間の色を16進表記の色に変換する．rgb(r,g,b)</dd>
+	<dt>Raphael.rgb2hsb</dt>
+		<dd>rgb色空間の色をhsb色空間での値{h,s,b}に変換する．rgb2hsb(r,g,b)</dd>
+	<dt>Raphael.rgb2hsl</dt>
+		<dd>rgb色空間の色をhsl色空間での値{h,s,l}に変換する．rgb2hsl(r,g,b)</dd>
+	</dl>
+	<p>なお，fillメソッド等で空文字列を指定した場合，無色（none）として扱われる点に注意が必要だ．</p>
+
+	<h3>色の自動生成</h3>
+	<p>また，階段状の色の変化を表現するためにgetColorメソッドが提供されている．グラフなどで使うと美しいグラデーションを実現できるだろう．</p>
+	<dl>
+	<dt>Raphael.getColor</dt>
+		<dd>赤を基準に次の色を取得する．引数には明るさを0〜1の範囲で渡す．14×6（84）回の操作で元の色に戻る．getColor(brightness)</dd>
+	<dt style="width:200px;">Raphael.getColor.reset</dt>
+		<dd>色のリセットを行う．</dd>
+	</dl>
+			<div id="canvas9" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas9", 200, 200);
+				var i,j;
+				for(i = 0; i<20; i++){
+					paper.add([{type: "rect",x: 10*i,y: 0,width: 10,height:50,fill: Raphael.getColor()}]);
+				}
+				Raphael.getColor.reset();
+				for(i = 0; i<20; i++){
+					paper.add([{type: "rect",x: 10*i,y: 50,width: 10,height:50,fill: Raphael.getColor(1)}]);
+				}
+				Raphael.getColor.reset();
+				for(j = 0; j<12; j++){
+					for(i = 0; i<14; i++){
+						paper.add([{
+							type: "rect",
+							x: 200/14*i,y: 100+100/12*j,width: 200/14,height:100/12,
+							fill: Raphael.getColor(1),
+							stroke:"none","stroke-width":0}]);
+					}
+				}
+			});</script></div>
+
+	</article>
+
+	<article>
+	<h2>グラデーションの設定</h2>
+	<p>
+	図形オブジェクトのfill属性にグラデーションを設定することが出来る．css3におけるグラデーションの指定に近く，シンプルに実装できる．</p>
+	<p>記述法：<code>[角度]-[color-stop]-[color-stop]</code>※color-stop値は<code>[color]:[offset%]</code>とする．</p>
+		<div id="canvas4" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas4", 200, 200);
+				paper.add([
+					{
+						type: "rect",
+						x: 10,y: 10,width: 80,height: 80,
+						fill: "0-red-blue"
+					},
+					{
+						type: "rect",
+						x: 110,y: 10,width: 80,height: 80,
+						fill: "45-red-blue:25%-green"
+					},
+					{
+						type: "rect",
+						x: 10,y: 110,width: 80,height: 80,
+						fill: "0-red-blue:50%-red:50%-green"
+					},
+					{
+						type: "rect",
+						x: 110,y: 110,width: 80,height: 80,
+						fill: "0-red-blue:25%-red:25%-green",
+						"fill-opacity": "0"
+					}
+				]);
+			});</script></div>
+	<p>グラデーションを設定したオブジェクトに対しopacity属性を設定すると，<b>不透明度にグラデーションが掛かる</b>（正常な動作なのかvmlの制限なのか不明）．</p>
+	<h3>放射状グラデーション</h3>
+	<p>circle及びellipseに限られるが，放射型グラデーションも設定できる．その際，焦点を設定することも可能である．</p>
+	<p>記述法：<code>r ([焦点の位置0〜1x],[焦点の位置0〜1y])[color-stop]-[color-stop]</code></p>
+		<div id="canvas5" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas5", 200, 200);
+				paper.add([
+					{
+						type: "circle",
+						cx: 50,cy: 50,r: 40,
+						fill: "r white-black"
+					},
+					{
+						type: "circle",
+						cx: 150,cy: 50,r: 40,
+						fill: "r(0.25,0.25)white-black"
+					},
+					{
+						type: "ellipse",
+						cx: 50,cy: 150,rx: 40, ry: 30,
+						fill: "r white-black-white-black"
+					},
+					{
+						type: "ellipse",
+						cx: 150,cy: 150,rx: 40, ry: 30,
+						fill: "r black:25%-white:75%"
+					}
+				]);
+			});</script></div>
+
+	</article>
+
+	<article>
+	<h2>図形の表示に関わる操作</h2>
+	<p>基本図形には色や見た目の他に，描画に関わる様々な機能が提供されている．</p>
+
+	<dl>
+	<dt>Element.toFront</dt>
+		<dd>前面に移動</dd>
+	<dt>Element.toBack</dt>
+		<dd>背面に移動</dd>
+	<dt>Element.hide</dt>
+		<dd>図形要素を隠す</dd>
+	<dt>Element.show</dt>
+		<dd>図形要素を表示する</dd>
+	<dt>Element.glow</dt>
+		<dd>図形要素の描画に効果をつける．影のような効果をつけることが出来る．
+			<dl>
+				<dt>width</dt><dd>広がりの幅</dd>
+				<dt>fill</dt><dd>塗りつぶすかどうか</dd>
+				<dt>opacity</dt><dd>透明度</dd>
+				<dt>offsetx</dt><dd>横方向のずらす幅</dd>
+				<dt>offsety</dt><dd>縦方向のずらす幅</dd>
+				<dt>color</dt><dd>色</dd>
+			</dl>
+		</dd>
+	</dl>
+		<div id="canvas5_1" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas5_1", 200, 200);
+				//本来のグラフィック
+				paper.add([
+					{type:"circle", cx: 40, cy: 40, r: 30,fill: "red"},
+					{type:"circle", cx: 50, cy: 50, r: 30,fill: "green"},
+					{type:"circle", cx: 60, cy: 60, r: 30,fill: "blue"}
+				]);
+				//先頭の円を前面に，2番目の円を隠す
+				var set = paper.add([
+					{type:"circle", cx: 140, cy: 40, r: 30,fill: "red"},
+					{type:"circle", cx: 150, cy: 50, r: 30,fill: "green"},
+					{type:"circle", cx: 160, cy: 60, r: 30,fill: "blue"}
+				]);
+				set.items[0].toFront();
+				set.items[1].hide();
+				//影を付ける
+				paper.add([
+					{type:"circle", cx: 40, cy: 140, r: 30,fill: "red"},
+					{type:"circle", cx: 50, cy: 150, r: 30,fill: "green"},
+					{type:"circle", cx: 60, cy: 160, r: 30,fill: "blue"}
+				]).glow({width:5,fill:false,opacity:0.5,offsetx:0,offsety:0,color:"black"});
+				//影の位置を指定する
+				paper.add([
+					{type:"circle", cx: 140, cy: 140, r: 30,fill: "red"},
+					{type:"circle", cx: 150, cy: 150, r: 30,fill: "green"},
+					{type:"circle", cx: 160, cy: 160, r: 30,fill: "blue"}
+				]).glow({width:1,fill:true,opacity:0.5,offsetx:10,offsety:-10,color:"purple"});
+			});</script></div>
+	<p>前にも示した通り，Setオブジェクトは個々の図形に対するスタイルの指定を簡略化するための機構であるため，影の処理が図形毎に行われている点に注意する．つまり，Raphaëlにおいては<b>growメソッドを用いて複数の図形を組み合わせたもの全体に影を付けると言ったことができない</b>．影専用の図形を用意して元となる画像の背後に配置すると言った工夫が必要となる．</p>
+	<p>この他、図形の描画に関わる属性としてblur（ぼかし）とclip-rect（描画範囲の制限）がある．</p>
+			<div id="canvas5_5" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas5_5", 200, 200);
+				//ぼかし
+				paper.add([
+					{type:"circle", cx: 40, cy: 40, r: 30,fill: "red"},
+					{type:"circle", cx: 50, cy: 50, r: 30,fill: "green"},
+					{type:"circle", cx: 60, cy: 60, r: 30,fill: "blue"}
+				]).attr({blur:2});
+				//クリップ
+				paper.add([
+					{type:"circle", cx: 140, cy: 140, r: 30,fill: "red"},
+					{type:"circle", cx: 150, cy: 150, r: 30,fill: "green"},
+					{type:"circle", cx: 160, cy: 160, r: 30,fill: "blue"}
+				]).attr({"clip-rect":"100,120,100,60"});
+				paper.rect(100,120,100,60).attr("stroke-dasharray", "- ");
+			});</script></div>
+
+	</article>
+
+	<article>
+	<h2>図形の変形</h2>
+	<p>基本図形に対する変形処理には様々なサポート機能が提供されている．※svgにおけるskew（せん断）に相当する機能は存在しない．</p>
+	<dl>
+	<dt>Element.scale</dt>
+		<dd>図形要素を拡大・縮小する．scale(sx,sy,cx,cy)※中心は省略可能</dd>
+	<dt>Element.rotate</dt>
+		<dd>図形要素を回転する．rotate(deg,cx,cy)※中心は省略可能</dd>
+	<dt>Element.translate</dt>
+		<dd>図形要素を平行移動する．translate(dx,dy)</dd>
+	<dt>Element.transform</dt>
+		<dd>図形要素を変形する．
+			<dl>
+				<dt>t操作</dt><dd>translate：平行移動（t dx,dy）</dd>
+				<dt>r操作</dt><dd>rotate：回転（r deg,cx,cy）</dd>
+				<dt>s操作</dt><dd>scale：拡大・縮小（s sx,sy,cx,cy）</dd>
+				<dt>m操作</dt><dd>matrix：マトリクス変換（m a,b,c,d,e,f）</dd>
+			</dl>
+		</dd>
+	<dt style="width:200px;">Raphael.parseTransformString</dt>
+		<dd>transform文字列を変形操作の配列に分解する．</dd>
+	</dl>
+	<p>transformメソッドは非常に高機能で，キーワード「...」（ピリオド×3）を指定することで変形の追加を行うことが出来る．</p>
+			<div id="canvas5_2" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas5_2", 200, 200);
+				var set = paper.add([
+					{type:"circle", cx: 140, cy: 140, r: 30,fill: "red"},
+					{type:"circle", cx: 150, cy: 150, r: 30,fill: "green"},
+					{type:"circle", cx: 160, cy: 160, r: 30,fill: "blue"}
+				]);
+				set.transform("r45,100,100t-100,-50s0.5,1");
+				set.transform("t25,25...s2,2");
+			});</script></div>
+	<p>transformメソッドの補助を行う機能としてMatrixオブジェクトが提供されている．これは図形の変形を（アフィン）行列で表したものとなっている．詳しくはsvgのtransform属性の項を参照．</p>
+
+	<dl>
+	<dt>Raphael.matrix</dt>
+		<dd>Matrixオブジェクトを生成する．matrix(a,b,c,d,e,f)</dd>
+	<dt>Element.matrix</dt>
+		<dd>現在図形要素に掛けられている変形をMatixオブジェクトで取得する．</dd>
+	<dt>Matrix.add</dt>
+		<dd>行列の足し算を行う．add(a,b,c,d,e,f)もしくはadd(matrix)</dd>
+	<dt>Matrix.clone</dt>
+		<dd>行列の複製を行う．clone()</dd>
+	<dt>Matrix.invert</dt>
+		<dd>逆行列を取得する．invert()</dd>
+	<dt>Matrix.rotate</dt>
+		<dd>変換行列に回転を掛け合わせる．rotate(a,x,y)</dd>
+	<dt>Matrix.scale</dt>
+		<dd>変換行列に拡大・縮小を掛け合わせる．scale(x,y,cx,cy)</dd>
+	<dt>Matrix.translate</dt>
+		<dd>変換行列に移動を掛け合わせる．translate(x,y)</dd>
+	<dt>Matrix.split</dt>
+		<dd>変換行列を原始変形（translate，scale，shear：せん断，rotate）に分解する{dx,dy,scalex,scaley,shear,rotate,isSimple}．isSimpleはrotate，scale，translateのみで構成されていた場合にtrueを返す．split()</dd>
+	<dt style="width:200px;">Matrix.toTransformString</dt>
+		<dd>変換行列のtransform文字列表現を取得する．toTransformString()</dd>
+	<dt>Matrix.x</dt>
+		<dd>指定した座標を行列変換した後のx座標を取得する．x(x,y)</dd>
+	<dt>Matrix.y</dt>
+		<dd>指定した座標を行列変換した後のy座標を取得する．y(x,y)</dd>
+	</dl>
+	<p>Matrixに対する計算は複数重ねることができるが，その際の変形処理の順は<b>後に行った変形関数から順に実行される&dagger;</b>．例えばtranslate→scale→rotateの順にメソッドを実行したのであれば，実際の変形は見た目上rotate→scale→translateの順に行われる．</p>
+			<div id="canvas5_3" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas5_3", 200, 200);
+				var set = paper.add([
+					{type:"rect", x: 50, y: 50, width: 80, height: 80,fill: "red"},
+					{type:"rect", x: 60, y: 60, width: 80, height: 80,fill: "green"},
+					{type:"rect", x: 70, y: 70, width: 80, height: 80,fill: "blue"}
+				]);
+				var matrix = Raphael.matrix();
+				//以下の処理はtransform文字列として「t-50,0s1.5,0.7,r45,100,100」に相当する．
+				matrix.translate(-50,0);
+				matrix.scale(1.5,0.7);
+				matrix.rotate(45, 100, 100);
+				set.transform(matrix.toTransformString());
+			});</script></div>
+	<p>&dagger;ここでは図形から見た変形の視点で説明した．transform属性の項でも述べたが，座標軸の変換からも説明できる．この視点で説明するならメソッドを実行した順に座標軸が変換されていることになる．</p>
+	</article>
+
+	<article>
+	<h2>パスの描画</h2>
+	<p>パスを描画する場合，svgでのd要素で定義されている操作をそのまま利用することが出来る．また，新たにRコマンドが追加されている．このコマンドを用いるとベジェ曲線と異なり，制御点を指定することなしに自動的にカーブを計算し，滑らかに座標間をつなぐことが出来る．</p>
+		<dl>
+			<dt>R,r</dt>
+				<dd>Catmull-Rom curve．指定した座標を滑らかにつなぐ．<br/>
+					但し，R操作を連続して記述する場合は，間のRの指定は省略しないとエラーとなる．
+				</dd>
+			<dt>その他</dt>
+				<dd>→Path要素におけるd操作を参照．</dd>
+		</dl>
+			<div id="canvas6" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas6", 200, 200);
+				//このRコマンドはsvg2.0で追加される可能性があるそうです．
+				paper.add([
+					{
+						type:"path",
+						//この部分をM 0,0 R 50,150 R 150,50 R 200,200とすることは出来ない．
+						path:"M 0,0 R 50,150 150,50 200,200"
+					},
+					{
+						type:"path",
+						path:"M 0,200 r 50,-150 150,-50 200,-200"
+					}
+				]);
+			});</script></div>
+	<p>Raphaëlでの塗りつぶしは自動的にくり貫き処理が行われる．</p>
+			<div id="canvas6_2" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas6_2", 200, 200);
+				paper.add([
+					{
+						type:"path",
+						path:"M 0,0 R 50,150 150,50 200,200 z M 0,200 r 50,-150 150,-50 200,-200 z",
+						fill:"red",
+						"stroke-width":0
+					}
+				]);
+			});</script></div>
+	<h3>線の描画の調整</h3>
+	<p>pathに限らずstroke-widthの値が奇数だった場合，レンダリング結果の境界部が汚くなるケースがあり，グラフの描画などでくっきりとした表示をしたい場合に問題となる．これは，2つのピクセルにまたがって線が描画されているためであり，これを回避するには描画位置を0.5px（viewBoxの値によって変化する）ずらすとよい．図形の描画位置を直接弄ってもよいが，viewBoxの描画位置をずらす手もある．但し，描画位置を変更することで新たな問題を引き起こす場合があり，根本的な解決策ではない点に注意する．</p>
+	<p>ieを除外する結果となるが，グラフィックがsvgであることを確認した上で，属性shape-renderingにcrispEdgesを設定する方法もある．</p>
+			<div id="canvas6_1" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas6_1", 200, 200);
+				paper.add([
+					{type:"path",path:"M 20,50 h 160"},
+					{type:"path",path:"M 20,100.5 h 160"}
+				]).attr({stroke:"blue", "stroke-width":"7"});
+				//only SVG
+				if(Raphael.svg){
+					paper.add([
+						{type:"path",path:"M 20,150 h 160",stroke:"blue", "stroke-width":"7"}
+					]).items[0].node
+					.style.setProperty("shape-rendering", "crispEdges");
+				}
+			});</script></div>
+	</article>
+
+	<article>
+	<h2>線の装飾</h2>
+	<p>図形要素のstroke-dasharray属性によりstrokeを破線とすることが出来る．なおRaphaël独自記法となっており，指定可能な値は文字「-（ハイフン）」「.（ピリオド）」「_（スペース）」の組み合わせからなる<span class="list"><span>-</span><span>.</span><span>-.</span><span>-..</span><span>._</span><span>-_</span><span>--</span><span>-_.</span><span>--.</span><span>--..</span></span>の10種類のみで，それ以外は無視される．</p>
+
+			<div id="canvas7_0" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas7_0", 200, 200);
+				paper.add([
+					{type: "path",path: "M 40,20 h 140","stroke-dasharray" :""},
+					{type: "path",path: "M 40,35 h 140","stroke-dasharray" :"-"},
+					{type: "path",path: "M 40,50 h 140","stroke-dasharray" :"."},
+					{type: "path",path: "M 40,65 h 140","stroke-dasharray" :"-."},
+					{type: "path",path: "M 40,80 h 140","stroke-dasharray" :"-.."},
+					{type: "path",path: "M 40,95 h 140","stroke-dasharray" :". "},
+					{type: "path",path: "M 40,110 h 140","stroke-dasharray" :"- "},
+					{type: "path",path: "M 40,125 h 140","stroke-dasharray" :"--"},
+					{type: "path",path: "M 40,140 h 140","stroke-dasharray" :"- ."},
+					{type: "path",path: "M 40,155 h 140","stroke-dasharray" :"--."},
+					{type: "path",path: "M 40,170 h 140","stroke-dasharray" :"--.."}
+				]).attr({"stroke-width": 3});
+				paper.add([
+					{type:"text", text:"無し", y:20},
+					{type:"text", text:"1:-", y:35},
+					{type:"text", text:"2:.", y:50},
+					{type:"text", text:"3:-.", y:65},
+					{type:"text", text:"4:-..", y:80},
+					{type:"text", text:"5:._", y:95},
+					{type:"text", text:"6:-_", y:110},
+					{type:"text", text:"7:--", y:125},
+					{type:"text", text:"8:-_.", y:140},
+					{type:"text", text:"9:--.", y:155},
+					{type:"text", text:"10:--..", y:170}								
+				]).attr({x:5, "font-size":13, "text-anchor":"start"});
+			});</script></div>
+	<p>stroke-linecapと合わせて丸い破線とすることも出来る．</p>
+			<div id="canvas7_1" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas7_1", 200, 200);
+				paper.add([
+					{type: "path",path: "M 20,30 h 160","stroke-dasharray" :""},
+					{type: "path",path: "M 20,50 h 160","stroke-dasharray" :"-"},
+					{type: "path",path: "M 20,70 h 160","stroke-dasharray" :"."},
+					{type: "rect",x: 20, y: 100, width: 160, height: 40, "stroke-dasharray" :"."}
+				]).attr({"stroke-width": 5, "stroke-linecap":"round","stroke-linejoin": "round"});
+			});</script></div>
+	<h3>マーカーの指定</h3>
+	<p>パスではarrow-start，arrow-end属性を用いることで簡単にマーカーを設定することが出来る．マーカーの色はstrokeの値を継承する．マーカーが設定される場所は必ず端点であり，パスの頂点にマーカーを設定することは出来ない．</p>
+	<p>記述法：<code>[スタイル]-[幅（narrow/midium/wide）]-[長さ（short/midium/long）]</code></p>
+	<dl>
+	<dt>classic</dt>
+		<dd>矢じり型</dd>
+	<dt>block</dt>
+		<dd>三角形型</dd>
+	<dt>open</dt>
+		<dd>鋭角型</dd>
+	<dt>oval</dt>
+		<dd>楕円型</dd>
+	<dt>diamond</dt>
+		<dd>菱形</dd>
+	<dt>none</dt>
+		<dd>無し</dd>
+	</dl>
+		<div id="canvas7" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas7", 200, 200);
+				paper.add([
+					{type: "path",path: "M 20,20 h 160",
+						"arrow-start" :"classic-wide-long",
+						"arrow-end" :"classic-narrow-long"},
+					{type: "path",path: "M 20,40 h 160",
+						"arrow-start" :"block-wide-long",
+						"arrow-end" :"block-narrow-long"},
+					{type: "path",path: "M 20,60 h 160",
+						"arrow-start" :"open-wide-long",
+						"arrow-end" :"open-narrow-long"},
+					{type: "path",path: "M 20,80 h 160",
+						"arrow-start" :"oval-wide-long",
+						"arrow-end" :"oval-narrow-long"},
+					{type: "path",path: "M 20,100 h 160",
+						"arrow-start" :"diamond-wide-long",
+						"arrow-end" :"diamond-narrow-long"},
+					{type: "path",path: "M 20,120 h 160",
+						"arrow-start" :"none-wide-long"},
+					{type: "path",path: "M 20,140 l 40,40",
+						"arrow-end" :"classic-narrow-short"},
+					{type: "path",path: "M 50,140 l 40,40",
+						"arrow-end" :"classic-midium-midium"},
+					{type: "path",path: "M 80,140 l 40,40",
+						"arrow-end" :"classic-wide-long"},
+					{type: "path",path: "M 110,140 l 15,15 m 5,5 l 20,20",
+						"arrow-end" :"classic-wide-long"}
+				]).attr({"stroke-width": 3, stroke: "red"});
+			});</script></div>
+
+	</article>
+
+	<article>
+	<h2>パスの操作に関わるメソッド群</h2>
+	<p>pathオブジェクトにはパスの長さや部分パスを取り出すためのメソッドが定義されている．</p>
+	<dl>
+	<dt style="width:200px;">Element.getPointAtLength</dt>
+		<dd style="margin-left:200px;">与えた長さにおける座標を返す{x,y}．getPointAtLength(length)</dd>
+	<dt style="width:200px;">Element.getSubpath</dt>
+		<dd style="margin-left:200px;">与えた長さに対するサブパス文字列を返す．この文字列を元にpathを描くことが出来る．getSubpath(from,to)</dd>
+	<dt style="width:200px;">Element.getTotalLength</dt>
+		<dd style="margin-left:200px;">パスの全長を返す．getTotalLength()</dd>
+	</dl>
+		<div id="canvasP" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasP", 200, 200);
+				var path = paper.path("M 10,10 Q 100,10 180,50");
+				var point = path.getPointAtLength(30);
+				paper.circle(point.x,point.y,5).attr("fill", "red");
+				var sub = path.getSubpath(50,120);
+				paper.path(sub).attr({stroke: "blue", "stroke-width": 5 });
+				//
+				var p = "M 10,80 Q 100,60 190,80";
+				paper.path(p);
+				var matrix = Raphael.matrix();
+				matrix.rotate(10,100,80);
+				paper.path(Raphael.mapPath(p,matrix)).attr("stroke", "green");
+				//
+				var p2 = "M10,140 L 100,100 L 190,140 L 100,180 z"
+				var ps = Raphael.path2curve(p2);
+				paper.path(ps.join()).attr("stroke", "blue");
+				paper.text(100,160,ps.join());
+			});</script></div>
+
+	<h3>パスに関わるユーティリティメソッド群</h3>
+	<p>この他にもRaphaëlではパスを操作する上で便利な機能を多数提供している．パスの交点を算出するなど，単純ではあるが面倒な処理も簡単に実現することが出来る．Raphaelオブジェクトのもつ関数は図形要素を生成しないため，<b>算出したパス情報をSVGPathElementに適用することも可能</b>だ．</p>
+
+	<dl>
+	<dt style="width:200px;">Raphael.getPointAtLength</dt>
+		<dd style="margin-left:200px;">パス文字列の与えた長さにおける座標を返す{x,y}．getPointAtLength(path, length)</dd>
+	<dt style="width:200px;">Raphael.getSubpath</dt>
+		<dd style="margin-left:200px;">パス文字列の与えた長さに対するサブパス文字列を返す．getSubpath(path, from, to)</dd>
+	<dt style="width:200px;">Raphael.getTotalLength</dt>
+		<dd style="margin-left:200px;">パス文字列に対するパスの全長を返す．getTotalLength()</dd>
+	<dt style="width:200px;">Raphael.parsePathString</dt>
+		<dd style="margin-left:200px;">パスを線分の配列とする．parsePathString(path)</dd>
+	<dt style="width:200px;">Raphael.path2curve</dt>
+		<dd style="margin-left:200px;">パスの線分を見た目を変えず（直線を含めて）全てc操作の配列に変換する．パスの記述形式を揃えることでモーフィング処理が容易に行えるようになる．path2curve(path)</dd>
+	<dt style="width:200px;">Raphael.pathIntersection</dt>
+		<dd style="margin-left:200px;">パスの交わる部分を取得する．交点の座標，交点の位置（0〜1），交差した線分のインデックス，交差した線分の3次ベジェ曲線の頂点値．pathIntersection(path1,path2)</dd>
+	<dt style="width:200px;">Raphael.pathToRelative</dt>
+		<dd style="margin-left:200px;">パスの表記を相対座標指定とする．こうすることで先頭の座標を変更するだけでパス全体を移動することが可能となる．</dd>
+	<dt style="width:200px;">Raphael.mapPath</dt>
+		<dd style="margin-left:200px;">パスを行列で変形し，その結果をpath文字列として取得する．mapPath(path, matrix)</dd>
+	<dt style="width:200px;">Raphael.transformPath</dt>
+		<dd style="margin-left:200px;">パスをtransform文字列で変形し，その結果をpath文字列で取得する．transformPath(path,transformString)</dd>
+	<dt style="width:200px;">Raphael.toMatrix</dt>
+		<dd style="margin-left:200px;">パスオブジェクトが描画されている座標系への変換Matrixを取得する．同じ座標系に図形を描画したい場合に利用する．toMatrix(path,transformString)</dd>
+	<dt style="width:200px;">Raphael.findDotsAtSegment</dt>
+		<dd style="margin-left:200px;">3次ベジェ曲線を構成する4点（8引数）と曲線の分割位置を与え，新たな制御点を得る．得られる制御点はstart，m，n，endの4つ．<br/>
+	例を示す．元の曲線を"M a,b C c,d e,f g,h"とし，分割点をtとすると，得られる曲線の分割は”M a,b C <b>start.x,start.y m.x,m.y t.x,t.y C n.x,n.y end.x,end.y</b> g,h”となる．分割後も，<b>path全体としては全く同じ形を保つ</b>．</dd>
+	</dl>
+
+	<h3>パスの交点を取得する</h3>
+	<p>pathIntersectionメソッドを利用すると，二つのパスの交点の座標を取得することが出来る．戻り値は交点情報の配列となっており，パスの交差回数によって長さが変化する．交点情報オブジェクトには交点の座標を表すx，yプロパティの他，交差したパス切片に相当するbez1，bez2プロパティが含まれている．このプロパティにはCコマンドに相当する座標情報が格納されている．</p>
+		<div id="canvasP2" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasP2", 200, 200);
+				var path1 = "M 10,10 H 30 Q 200,30 150,80 L 80,180 H 10";
+				paper.path(path1);
+				var path2 = "M 190,10 h -40 Q 30,50 30,80 L 190,180";
+				paper.path(path2);
+				//pathの交点情報を取得する
+				var inter = Raphael.pathIntersection(path1, path2);
+				//今回は2点で交差するため，interの長さは2となる．
+				//bez1は交点が存在するpath1での線分．bez2は交点が存在するpath2での線分．
+				//下のようにすることでCコマンドに変換することが出来る．
+				paper.add([
+					{type: "path", path:Raphael.format("M{0},{1}C{2},{3} {4},{5} {6},{7}", inter[0].bez1)},
+					{type: "path", path:Raphael.format("M{0},{1}C{2},{3} {4},{5} {6},{7}", inter[0].bez2)},
+				]).attr({"stroke-width": 3, stroke: "blue"});
+				paper.add([
+					{type: "path", path:Raphael.format("M{0},{1}C{2},{3} {4},{5} {6},{7}", inter[1].bez1)},
+					{type: "path", path:Raphael.format("M{0},{1}C{2},{3} {4},{5} {6},{7}", inter[1].bez2)},
+				]).attr({"stroke-width": 3, stroke: "green"});
+				//交点座標
+				paper.add([
+					{type: "circle", cx:inter[0].x ,cy:inter[0].y ,r:5 },
+					{type: "circle", cx:inter[1].x ,cy:inter[1].y ,r:5 }
+				]).attr({"stroke-width": 3, stroke: "red"});
+			});</script></div>
+	<h3>ベジェ曲線の分割</h3>
+	<p>ベジェ曲線は任意の位置で二つのベジェ曲線に分割できることが数学的に確かめられており，findDotsAtSegmentメソッドを用いることでこの計算を自動的に行うことが出来る．得られたオブジェクトには分割位置に対する座標（x，y）の他に分割後のベジェ曲線の制御点に相当するstart，m，n，endの4座標の情報が含まれている．</p>
+		<div id="canvasP3" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasP3", 200, 200);
+				//ベジェ曲線の分割
+				var p2 = "M 10,10 C 400,30 -110,180 190,190"
+				paper.path(p2);
+				var part = Raphael.findDotsAtSegment(10,10,400,30,-110,180,190,190, 0.4);
+				//分割後のベジェ曲線を表示する
+				paper.add([{
+					type: "path", 
+					path: Raphael.format("M10,10 C{0},{1} {2},{3} {4},{5} C{6},{7} {8},{9} 190,190",
+						part.start.x, part.start.y,//制御点1
+						part.m.x, part.m.y, //制御点2
+						part.x, part.y,//分割点
+						part.n.x, part.n.y, //制御点3
+						part.end.x, part.end.y)//制御点4
+				}]).attr({"stroke-width": 3, stroke: "purple", "stroke-dasharray":"- "});
+				//制御点を表示する
+				paper.add([{
+					type: "path", 
+					path: Raphael.format("M10,10L{0},{1}"
+						+ "M{2},{3}L{4},{5}"
+						+ "M{4},{5}L{6},{7}"
+						+ "M{8},{9}L190,190",
+						part.start.x, part.start.y,//制御点1
+						part.m.x, part.m.y, //制御点2
+						part.x, part.y,//分割点
+						part.n.x, part.n.y, //制御点3
+						part.end.x, part.end.y)//制御点4
+				}]).attr({"stroke-width": 1, "stroke-dasharray":"- "});
+				paper.circle(part.x, part.y, 5).attr({"stroke-width": 3, stroke: "red"});
+				
+			});</script></div>
+
+	</article>
+
+	<article>
+	<h2>座標の判定処理</h2>
+	<p>Raphaelでは様々な座標に関わる判定メソッドが提供されている．</p>
+	<dl>
+	<dt style="width:200px;">Raphael.is</dt>
+		<dd style="margin-left:200px;">データ型の判定を行う．</dd>
+	<dt style="width:200px;">Element.getBBox</dt>
+		<dd style="margin-left:200px;">図形要素の描画領域を矩形範囲オブジェクトとして取得する．getBBox(isWithoutTransform)変形を加味するか</dd>
+	<dt style="width:200px;">Raphael.bezierBBox</dt>
+		<dd style="margin-left:200px;">ベジェ曲線の描画範囲を矩形範囲オブジェクトとして算出する．bezierBBox()</dd>
+	<dt style="width:200px;">Raphael.pathBBox</dt>
+		<dd style="margin-left:200px;">パスに対する描画範囲を矩形範囲オブジェクトとして取得する．pathBBox()</dd>
+	<dt style="width:200px;">Raphael.isBBoxIntersect</dt>
+		<dd style="margin-left:200px;">矩形範囲オブジェクトが共通部分をもつかどうか．isBBoxIntersect(bbox1, bbox2)</dd>
+	<dt style="width:200px;">Raphael.isPointInsideBBox</dt>
+		<dd style="margin-left:200px;">矩形範囲オブジェクトが座標を含むかどうか．isPointInsideBBox(bbox, x,y)</dd>
+	<dt style="width:200px;">Raphael.isPointInsidePath</dt>
+		<dd style="margin-left:200px;">パス文字列が指定した座標を含むかどうか．isPointInsidePath(pathString, x,y)</dd>
+	<dt style="width:200px;">Element.isPointInside</dt>
+		<dd style="margin-left:200px;">指定した座標が図形要素に含まれるかどうかを取得する．isPointInside(x,y)</dd>
+	<dt style="width:200px;">Paper.getElementByPoint</dt>
+		<dd style="margin-left:200px;">指定した座標の最も上にある図形オブジェクトを取得する．getElementByPoint(x,y)<br/>
+	※現在仕様を含めたバグが存在しており，期待通りの動きとならない．</dd>
+	<dt style="width:200px;">Paper.getElementsByPoint</dt>
+		<dd style="margin-left:200px;">指定した座標の図形オブジェクトのSetを取得する．getElementsByPoint(x,y)</dd>
+	</dl>
+	<p>
+	ここで矩形範囲オブジェクトはプロパティにx,y,x1,x2,width,heightをもつもので，Element.getBBoxで得られるオブジェクトはこの条件に適合する．
+	</p>
+			<div id="canvasC" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasC", 200, 200);
+				//Element.getBBox
+				var rect = paper.rect(30,30,50,50);
+				rect.attr("fill", "blue").transform("r45,55,55");
+				var bbox1 = rect.getBBox(false);
+				var bbox2 = rect.getBBox(true);
+				paper.add([
+					{type:"rect" ,x: bbox1.x, y: bbox1.y, width: bbox1.width, height:bbox1.height},
+					{type:"rect" ,x: bbox2.x, y: bbox2.y, width: bbox2.width, height:bbox2.height}
+				]).attr("stroke-dasharray", "- ");
+				//Raphael.bezierBBox
+				var bbbox = Raphael.bezierBBox(100,10,150,10,190,70,190,100);
+				paper.path("M 100,10 C150,10 190,70 190,100");
+				paper.rect(bbbox.x, bbbox.y, bbbox.width, bbbox.height).attr("stroke-dasharray", "- ");
+				//Raphael.pathBBox
+				var path = "M 50,150 L 10,110 L 90,150 L 10,190 z";
+				var bbbox = Raphael.pathBBox(path);
+				paper.path(path).attr("fill","red");
+				paper.rect(bbbox.x, bbbox.y, bbbox.width, bbbox.height).attr("stroke-dasharray", "- ");
+				//Raphael.isBBoxIntersect
+				var r1 = paper.rect(110,110,30,30);
+				var r2 = paper.rect(120,120,30,30);
+				var r3 = paper.rect(155,150,19,19);
+				var r4 = paper.rect(175,170,19,19);
+				if(Raphael.isBBoxIntersect(r1.getBBox(false),r2.getBBox(false))){
+					r1.attr("fill","red");
+					r2.attr("fill","red");
+				}
+				if(Raphael.isBBoxIntersect(r3.getBBox(false),r4.getBBox(false))){
+					r3.attr("fill","red");
+					r4.attr("fill","red");
+				}
+			});</script></div>
+	<p>
+	矩形範囲だけでなく，図形の描画範囲による座標の包含を判定することも可能．
+	</p>
+			<div id="canvasC1" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasC1", 200, 200);
+				//Raphael.isPointInsideBBox
+				var r1 = paper.rect(10,10,80,40);
+				var r2 = paper.rect(10,50,80,40);
+				if(Raphael.isPointInsideBBox(r1.getBBox(false), 20,20)){
+					r1.attr("fill","red");
+				}
+				if(Raphael.isPointInsideBBox(r2.getBBox(false), 20,20)){
+					r2.attr("fill","red");
+				}
+				paper.circle(20,20,3).attr("fill", "black");
+				//Raphael.isPointInsidePath
+				var p1 = "M 100,50 Q 150,-20 200,50";
+				var p2 = "M 100,100 Q 150,30 200,100";
+				var path1 = paper.path(p1);
+				var path2 = paper.path(p2);
+				if(Raphael.isPointInsidePath(p1, 160,45)){
+					path1.attr("fill","red");
+				}
+				if(Raphael.isPointInsidePath(p2, 160,45)){
+					path2.attr("fill","red");
+				}
+				//Element.isPointInside
+				paper.circle(160,45,3).attr("fill", "black");
+				var c1 = paper.circle(50,150,40);
+				var c2 = paper.circle(100,150,40);
+				if(c1.isPointInside(60,130)){
+					c1.attr("fill","red");
+				}
+				if(c2.isPointInside(60,130)){
+					c2.attr("fill","red");
+				}
+				paper.circle(60,130,3).attr("fill", "black");
+			});</script></div>
+	<p>
+	座標を指定して，図形要素を串刺しにすることもできる．※<a href="https://github.com/DmitryBaranovskiy/raphael/issues/565">getElementByPointメソッドは現在正しく動作しない</a>．マウスカーソルによる図形の選択を意識しているようだが，中々意図した通りの動作とならないため，getElementsByPointメソッドを使い，最後の図形要素を取得するとよい．
+	</p>
+			<div id="canvasC2" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasC2", 200, 200);
+				//Paper.getElementByPoint,Paper.getElementsByPoint
+				for(var i = 0; i<11; i++){
+					paper.circle(50 + i * 10, 50 + i * 10, 40);
+				}
+				//現状ページを基準とした座標が有効となってしまっているらしい．
+				//paper.getElementByPoint(175,175).attr("fill", "blue");
+				paper.getElementsByPoint(80,80).attr("fill", "green");
+				paper.circle(80,80,3).attr("fill", "black");
+			});</script></div>
+	</article>
+
+	<article>
+	<h2>アニメーション処理</h2>
+	<p>
+	アニメーション機構を用いることで，cssにおけるtransitionやanimationのような効果を得ることができる．機能が絞られている分習得はしやすいものの，複雑な動きを実現することはできない．とは言え，面倒ではあるが独自のスクリプトを組むことでいくらでも機能を充実することができるので，それほど気にはならない．
+	</p>
+	<p>
+	アニメーションを実行するにはElement.animateメソッドを呼び出せば良い．<b>現在の設定値からメソッドに指定した値まで徐々に値を変化させる</b>ことでアニメーションを表現する．イベント処理と組み合わせれば，任意のタイミングでアニメーションを開始できる．また，setTimeout関数と組み合わせれば，繰り返し処理とすることもできる．なお，animateメソッドでアニメーション化出来るプロパティは次の通り．また色のアニメーションは可能だが，グラデーションのアニメーションまでは対応していない．
+	</p>
+	<dl>
+	<dt>アニメーション化可能な属性</dt>
+	<dd>blur，clip-rect，cx，cy，fill，fill-opacity，font-size，height，opacity，path, r，rx，ry，stroke，stroke-opacity，stroke-width，transform，width，x，y
+	</dd>
+	</dl>
+	<dl>
+	<dt>Raphael.animation</dt>
+		<dd>Animationオブジェクトを生成する．animation({params},ms,easing,callback)</dd>
+	<dt>Animation.delay</dt>
+		<dd>指定した遅延時間分，実行開始を指定のミリ秒だけ遅らせる．repeatが設定されていた場合は，その<b>ループ毎に遅延が発生する</b>．</dd>
+	<dt>Animateion.repeat</dt>
+		<dd>指定した回数分繰り返すAnimationオブジェクトを返す．無制限は文字列"Infinity"を指定する．</dd>
+	<dt>Element.animate</dt>
+		<dd>アニメーションを行う．animate({params},ms,easing,callback)もしくはanimation(animation)</dd>
+	<dt>Element.animateWith</dt>
+		<dd>アニメーションを経過時間を同期する．animateWith(targetElem,targetAnim,ms,easing,callback)もしくはanimateWith(targetElem,targetAnim,animation)</dd>
+	</dl>
+	<p>
+	Animationオブジェクトはアニメーション動作の定義を行うもので，Element.animateメソッドの引数に利用する．複数の図形要素のアニメーション処理に使いまわすことが出来る．また，拡張機能としてディレイ効果や，繰り返し設定を簡単に実現することができる．Raphaël内部ではこのAnimationとElementの組みでアニメーションが管理されており，アニメーションを制御する場合にAnimationオブジェクトが必要となる．</p>
+	<p>
+	Element.animateメソッドは重ねがけすることが出来る．そのため異なる属性に別のアニメーションを施すことで表現の幅が広がる．
+	</p>
+		<div id="canvasAn" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasAn", 200, 200);
+				//最も簡単なアニメーション
+				//jQueryの記法と同じなので，馴染みのある書き方だろう．
+				var circle = paper.circle(10,10,10).attr("fill","red");		
+				circle.click(function(){
+					circle.animate({cx:190},6000,"linear", function(){this.attr({cx:10});});
+				});
+				//素朴にアニメーションを繰り返す例
+				var circle2 = paper.circle(10,30,10).attr("fill","red");
+				repeat();
+				function repeat(){
+					circle2.attr({cx:10});
+					circle2.animate({cx:190},6000,"linear", function(){
+						//setTimeout関数を使ってアニメーション処理を繰り返す
+						setTimeout(repeat,0);
+					});
+				}
+				//Animationオブジェクトを使って繰り返す
+				var circle3 = paper.circle(10,70,10).attr("fill","red");
+				var anim = Raphael.animation({cx:190},6000,"linear");
+				circle3.animate(anim.repeat("Infinity"));
+				//Animationオブジェクトを使って記述を簡略化する
+				var circle4 = paper.circle(10,110,10).attr("fill","red");
+				var circle5 = paper.circle(10,130,10).attr("fill","red");
+				var circle6 = paper.circle(10,150,10).attr("fill","red");
+				var anim2 = Raphael.animation({cx:190},6000,"linear");
+				circle4.animate(anim.repeat("Infinity"));
+				circle5.animate(anim.repeat("Infinity").delay(100));
+				circle6.animate(anim.repeat("Infinity").delay(200));
+				//animateメソッドを重ねがけしてみよう
+				var circle7 = paper.circle(10,170,10).attr("fill","blue");
+				var anim1 = Raphael.animation({cx:190},6000,"linear").repeat("Infinity");
+				var anim2 = Raphael.animation({cy:190},1000,"linear").repeat("Infinity");
+				repeat2();
+				function repeat2(){
+					circle7.attr({cx:10,cy:190});
+					circle7.animate({cx:190},3000,"linear")
+						.animate({cy:170},6000,"linear", function(){
+						//setTimeout関数を使ってアニメーション処理を繰り返す
+						setTimeout(repeat2,0);
+					});
+				}
+				//Animationオブジェクトを使っても同様に行える．
+				var circle8 = paper.circle(10,170,10).attr("fill","red");
+				var anim3 = Raphael.animation({cx:190},6000,"linear").repeat("Infinity");
+				var anim4 = Raphael.animation({cy:190},1000,"linear").repeat("Infinity");
+				circle8.animate(anim3).animate(anim4);
+			});</script></div>
+	<p>
+	Element.animateWithメソッドを用いると，現在動作しているアニメーションとこれから実行しようとするアニメーションの経過時間を合わせることが出来る．
+	</p>
+		<div id="canvasAn1" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasAn1", 200, 200);
+				var circle1 = paper.circle(10,10,10).attr("fill","red");
+				var anim1 = Raphael.animation({cx:190},6000,"linear",
+					function(){this.attr({cx:10});}
+				);
+				circle1.click(function(){
+					circle1.animate(anim1);
+				});
+				var circle2 = paper.circle(10,30,10).attr("fill","red");
+				var anim2 = Raphael.animation({cx:190}, 6000, "linear",
+					function(){this.attr({cx:10});}
+				);
+				circle2.click(function(){
+					circle2.animateWith(circle1, anim1, anim2);
+				});
+			});</script></div>
+	<h3>パスの変形アニメーション</h3>
+	<p>
+	Raphaëlが提供するアニメーション処理の真骨頂は，異なる形状のpathを滑らかに変形できるところだろう．強力なpathの変形機能を利用して円を矩形に変形することも可能だ．pathが複数のパーツに分かれていてもアニメーション化可能だが，変形処理自体を制御することができないため，イメージ通りに動かすのは非常に困難である．
+	</p>
+			<div id="canvasAn3" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasAn3", 200, 200);
+				var path1 = "M 25,100 A 75,75 0 1,1 175,100 A 75,75 0 1,1 25,100 Z";
+				var path2 = "M 150,150 h -100 v -100 h 100 z";
+				var path = paper.path(path1).attr({fill: "blue", "stroke-width":0});
+				var anim = Raphael.animation({path:path2, fill: "red"}, 12000, "elastic").delay(2000).repeat("Infinity");
+				path.animate(anim);
+			});</script></div>
+	<h3>transform属性に対するアニメーション</h3>
+	<p>またアニメーションをtransform属性に掛けることも可能だ．インターフェースが統一されているため，判りやすい．</p>
+			<div id="canvasAn4" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasAn4", 200, 200);
+				var path1 = "M 50,0 a 50,50 0 1,1 0,100 a 50,50 0 1,1 0,-100 z M 150,100 a 50,50 0 1,1 0,100 a 50,50 0 1,1 0,-100 z";
+				var path2 = "M 75,175 h -50 v -50 h 50 z M 175,75 h -50 v -50 h 50 z M 75,75 h -50 v -50 h 50 z M 175,175 h -50 v -50 h 50 z";
+				var path = paper.path(path1).attr({fill: "blue", "stroke-width":0});
+				var anim = Raphael.animation({path:path2, fill: "red",transform:"r360,100,100"}, 12000, "bounce").delay(2000).repeat("Infinity");
+				path.animate(anim);
+			});</script></div>
+
+
+	<h3>イージング関数の種類</h3>
+	<p>アニメーションを行う際のイージング関数は次のものが提供されている．</p>
+	<dl>
+
+	<dt>linear</dt>
+		<dd>線形．</dd>
+	<dt>easeIn</dt>
+		<dd>加速「&lt;」「easeIn」「ease-in」</dd>
+	<dt>easeOut</dt>
+		<dd>減速「&gt;」「easeOut」「ease-out」</dd>
+	<dt>easeInOut</dt>
+		<dd>加減速「&gt;」「easeInOut」「ease-in-out」</dd>
+	<dt>backIn</dt>
+		<dd>後ろに勢いを付けて．「backIn」「back-in」</dd>
+	<dt>backOut</dt>
+		<dd>終了点で少しはみ出す．「backOut」「back-out」</dd>
+	<dt>elastic</dt>
+		<dd>振動．</dd>
+	<dt>bounce</dt>
+		<dd>バウンド効果．</dd>
+	<dt>cubic-bezier</dt>
+		<dd>3次ベジェ曲線による．「cubic-bezier(x1, y1, x2, y2)」</dd>
+	</dl>
+			<div id="canvasAn2" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasAn2", 200, 200);
+				Raphael.getColor.reset();
+				paper.circle(20,20,10).attr("fill",Raphael.getColor(1)).click(function(){
+					this.animate({cx:180},2000,"linear", function(){this.attr({cx:20})});});
+				paper.circle(20,40,10).attr("fill",Raphael.getColor()).click(function(){
+					this.animate({cx:180},2000,"easeIn", function(){this.attr({cx:20})});});
+				paper.circle(20,60,10).attr("fill",Raphael.getColor()).click(function(){
+					this.animate({cx:180},2000,"easeOut", function(){this.attr({cx:20})});});
+				paper.circle(20,80,10).attr("fill",Raphael.getColor()).click(function(){
+					this.animate({cx:180},2000,"easeInOut", function(){this.attr({cx:20})});});
+				paper.circle(20,100,10).attr("fill",Raphael.getColor()).click(function(){
+					this.animate({cx:180},2000,"backIn", function(){this.attr({cx:20})});});
+				paper.circle(20,120,10).attr("fill",Raphael.getColor()).click(function(){
+					this.animate({cx:180},2000,"backOut", function(){this.attr({cx:20})});});
+				paper.circle(20,140,10).attr("fill",Raphael.getColor()).click(function(){
+					this.animate({cx:180},2000,"elastic", function(){this.attr({cx:20})});});
+				paper.circle(20,160,10).attr("fill",Raphael.getColor()).click(function(){
+					this.animate({cx:180},2000,"bounce", function(){this.attr({cx:20})});});
+				paper.circle(20,180,10).attr("fill",Raphael.getColor()).click(function(){
+					this.animate({cx:180},2000,"cubic-bezier(1,0,0,1)", function(){this.attr({cx:20})});});
+			});</script></div>
+
+	<h3>アニメーションの制御</h3>
+	<p>アニメーションの制御を行うメソッドとしては次が提供されている．しかし，現状動作が不安定なようで，当方の環境では思うような制御が行えなかった．なお，内部エラーが発生するとページ全体のアニメーションが停止してしまう．どうやらアニメーションの管理は一箇所で行なっているようだ．</p>
+	<dl>
+	<dt>Element.setTime</dt>
+		<dd>アニメーションの経過時間を設定する．setTime(animation,time)</dd>
+	<dt>Element.stop</dt>
+		<dd>アニメーションを停止する．stop(),stop(animation)</dd>
+	<dt>Element.pause</dt>
+		<dd>アニメーションを一時停止する．pause(),pause(animation)</dd>
+	<dt>Element.resume</dt>
+		<dd>アニメーションを再開する．resume(),resume(animation)</dd>
+	<dt>Element.status</dt>
+		<dd>アニメーションの状態（0から1のアニメーション実行経過の割合）を取得・設定する．内部で動作しているAnimateオブジェクトを取得する目的でも使える．status()…[{animate,status}]，status(animate)…status，status(animate,status)…値の設定</dd>
+	</dl>
+
+	<h3>補足）animateAlongメソッドについて</h3>
+	<p>文献によっては図形をpathに沿って動かすanimateAlongメソッドが存在しているが，これはRaphaëlのバージョンアップに伴い<a href="http://stackoverflow.com/questions/8295371/animatealong-function-is-not-defined-in-raphael-javascript">削除された</a>．これと同等の機能を実現する場合は，パスの全長をgetTotalLengthメソッドで取得し，getPointAtLengthメソッドで道のりに対する座標を算出して図形の描画基準点を決定すると良い．</p>
+			<div id="canvasAA" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasAA", 200, 200);
+				var path = paper.path("M 10,10 R 100,150 190,100 100,50 10,190")
+					.attr({stroke: "blue", "stroke-dasharray": "- "});
+				var length = path.getTotalLength();
+				var circle = paper.circle(0,0,5).attr({fill: "red",stroke: "none"});
+				var i = 0;
+				setInterval(function(){
+					var point = path.getPointAtLength(length/120 * (i++%120));
+					circle.attr("cx", point.x);
+					circle.attr("cy", point.y);
+				},50);
+			});</script></div>
+	</article>
+
+	<article>
+	<h2>リンクの設定</h2>
+	<p>Element.attrメソッドを使ってハイパーリンクを定義することが出来る．href属性でリンク先を，target属性でリンクの表示先ウインドウを指定する．</p>
+			<div id="canvasL" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasL", 200, 200);
+				var circle = paper.circle(100,100,80)
+					.attr({fill:"red",stroke:"orange" ,
+						"stroke-width":10, href: "#", target:"blank"})
+					.hover(function(){this.attr("fill","yellow")}
+						,function(){this.attr("fill","red")});
+			});</script></div>
+	</article>
+
+	<article>
+	<h2>ユーザーイベント</h2>
+	<p>以下にイベント処理に関わるメソッドを示す．複数のイベントハンドラをまとめて設定可能なhoverやdrag等，便利なものが提供されている．イベントハンドラを登録するメソッドには必ずハンドラを解除するメソッドが提供されている．touch系のイベントはAppleが提唱したごく<a href="http://www.w3.org/TR/2011/CR-touch-events-20111215/">最近定められた</a>もので，利用できる環境が限られる．</p>
+	<p>
+	イベントハンドラ内部でのthis変数にはイベントを発生させた図形オブジェクトが設定される．簡単な例を示す．
+	</p>
+			<div id="canvasR1" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasR1", 200, 200);
+				var circle = paper.circle(100,100,80)
+					.attr({fill:"red",stroke:"orange" ,"stroke-width":10});
+				circle.click(function(e){
+					this.attr("fill", Raphael.getColor(1));
+				});
+			});</script></div>
+			<div id="canvasR2" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasR2", 200, 200);
+				var circle = paper.circle(50,50,40)
+					.attr({fill:"red",stroke:"orange" ,"stroke-width":5});
+				circle.drag(function(dx,dy){
+					this.attr("cx", this._cx + dx).attr("cy", this._cy + dy);
+				},function(){
+					this._cx = this.attr("cx");
+					this._cy = this.attr("cy");		
+				},function(){
+					delete(this._cx);
+					delete(this._cy);
+				});
+			});</script></div>
+	<dl>
+	<dt>Element.click</dt>
+		<dd>図形要素をクリックした際の処理を設定する．</dd>
+	<dt>Element.dblclick</dt>
+		<dd>図形要素をダブルクリックした際の処理を設定する．</dd>
+	<dt>Element.drag</dt>
+		<dd>図形要素をドラッグした際の処理を設定する．drag(onmove, onstart, onend, [mcontext], [scontext], [econtext])</dd>
+	<dt>Element.hover</dt>
+		<dd>図形要素にカーソルが当たった際の処理を設定する．mouseover，mouseoutイベントを一括して登録することが出来る．hover(f_in, f_out, [in_context], [o_context])</dd>
+	<dt>Element.mousedown</dt>
+		<dd>図形要素においてマウスボタンを押下した際の処理を設定する．</dd>
+	<dt>Element.mousemove</dt>
+		<dd>図形要素においてカーソルを動かした際の処理を設定する．</dd>
+	<dt>Element.mouseout</dt>
+		<dd>図形要素においてカーソルが範囲外に出た際の処理を設定する．</dd>
+	<dt>Element.mouseover</dt>
+		<dd>図形要素においてカーソルが上に乗った際の処理を設定する．</dd>
+	<dt>Element.mouseup</dt>
+		<dd>図形要素においてマウスボタンを離した際の処理を設定する．</dd>
+	<dt>Element.touchcancel</dt>
+		<dd>図形要素においてタッチがキャンセルされた際の処理を設定する．</dd>
+	<dt>Element.touchend</dt>
+		<dd>図形要素においてタッチが終了された際の処理を設定する．</dd>
+	<dt>Element.touchmove</dt>
+		<dd>図形要素においてタッチの移動がなされた際の処理を設定する．</dd>
+	<dt>Element.touchstart</dt>
+		<dd>図形要素においてタッチが開始された際の処理を設定する．</dd>
+	<dt>Element.unXXX</dt>
+		<dd>イベント処理の登録を解除する．unclick等．</dd>
+	</dl>
+	<h3>ドラッグ操作の拡張</h3>
+	<p>ドラッグ操作による処理は，onDragOverメソッドと<a href="http://stackoverflow.com/questions/8903717/raphael-detect-overlapped-elements-when-drag-and-drop">組み合わせることで応用範囲が更に広がる</a>．</p>
+	<dl>
+	<dt>Element.onDragOver</dt>
+		<dd>ドラッグオーバー時の処理を設定する．関数の引数にはカーソル直下の要素が渡される．引数無指定でイベントハンドラのバインドを解除する．内部ではdrag.over.[id]というカスタムイベントが実行されている．</dd>
+	</dl>
+			<div id="canvasDrgover" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasDrgover", 200, 200);
+				paper.setStart();
+				for(var j=0; j<40; j++){
+					for(var i=0; i<40; i++){
+						paper.rect(i*5,j*5,5,5);
+					}
+				};
+				paper.setFinish().attr({
+					fill:"white",
+					stroke:"none",
+					"stroke-width":0
+				});
+				var circle = paper.circle(25,25,12.5)
+					.attr({fill:"red",stroke:"orange" ,"stroke-width":2.5});
+				circle.drag(
+					function(dx,dy){
+						this.attr("cx", this._cx + dx).attr("cy", this._cy + dy);
+					},function(){
+						this._cx = this.attr("cx");
+						this._cy = this.attr("cy");		
+					},function(){
+						delete(this._cx);
+						delete(this._cy);
+					}
+				).onDragOver(function(elem){
+					elem.attr("fill", "blue");
+				});
+			});</script></div>
+	</article>
+
+	<article>
+	<h2>eveによるカスタムイベントの実行とアニメーションイベント</h2>
+	<p>先に示したものはdomが発生するイベントだが，Raphaëlには同作者によるjavascriptライブラリ<a href="http://dmitry.baranovskiy.com/eve/">eve</a>が組み込まれており，カスタムイベントの定義・実行が可能である．</p>
+	<p>
+	カスタムイベントは，「/」「.」で区切られた文字列で管理されている．例えばeve.onメソッドでイベント「a.b.c」を発生させると，階層順に「a」→「a.b」→「a.b.c」の順番でそれぞれ登録されている関数が実行される．また，ワイルドカード「＊」を使って関数を登録することも可能である．ワイルドカードの方が先に実行されるが，詳細はサンプルを参照のこと．
+	</p>
+			<div id="canvasEv" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasEv", 200, 200);
+				var tmp;
+				//*を含んだイベント名称の実行順を調べる
+				eve.on("a", function(){tmp = "A";});
+				eve.on("a.*", function(){tmp += "B";});
+				eve.on("a.b", function(){tmp += "C";});
+				eve.on("a.*.*", function(){tmp += "D";});
+				eve.on("a.*.c", function(){tmp += "E";});
+				eve.on("a.b.*", function(){tmp += "F";});
+				eve.on("a.b.c", function(){tmp += "G";});
+				eve.on("a.d", function(){tmp += "H";eve.stop();});//サブイベントを中断
+				eve.on("a.d.e", function(){tmp += "I";});
+				//eveメソッドを使ってイベントを着火
+				paper.setStart();
+				eve("a.b.c");
+				paper.text(20,20,"(1)"+tmp);
+				eve("a.d.c");
+				paper.text(20,40,"(2)"+tmp);
+				eve("a.b.d");
+				paper.text(20,60,"(3)"+tmp);
+				eve("a.d.e");
+				paper.text(20,80,"(4)"+tmp);
+				paper.setFinish().attr({"font-size":20, "text-anchor": "start"});
+			});</script></div>
+
+	<dl>
+	<dt>eve</dt>
+		<dd>カスタムイベントを実行する．eve(name,scope,varargs)scope…実行コンテクスト，varargs…イベントハンドラーに渡されるパラメータ</dd>
+	<dt>eve.listeners</dt>
+		<dd>イベントハンドラ関数の配列を取得する．listeners(name)</dd>
+	<dt>eve.nt</dt>
+		<dd>現在実行しているイベントの名称を取得する．イベントハンドラ関数内部で実行する．nt(subname)…指定した名称を含んでいるか．nt()現在のイベント名称を取得する．</dd>
+	<dt>eve.on</dt>
+		<dd>イベントハンドラを定義する．on(name,f)</dd>
+	<dt>eve.once</dt>
+		<dd>イベントハンドラを定義する．一度実行されると，自動的に削除される．onece(name,f)</dd>
+	<dt>eve.stop</dt>
+		<dd>これ以降のサブイベントの着火を停止する．stop()</dd>
+	<dt>eve.unbind</dt>
+		<dd>イベントハンドラを削除する．unbind(name,f)</dd>
+	<dt>eve.version</dt>
+		<dd>組み込まれているeveのバージョン．</dd>
+	</dl>
+	<h3>アニメーションイベント</h3>
+	<p>また，この機能を用いてアニメーション開始・実行・終了時のイベント処理を行える．</p>
+	<dl>
+	<dt style="width:200px;">raphael.anim.start.[id]</dt>
+		<dd>アニメーション開始時に実行される処理の識別子．</dd>
+	<dt style="width:200px;">raphael.anim.frame.[id]</dt>
+		<dd>アニメーション中に実行される処理の識別子．</dd>
+	<dt style="width:200px;">raphael.anim.finish.[id]</dt>
+		<dd>アニメーション終了時に実行される処理の識別子．</dd>
+	</dl>
+			<div id="canvasAnA" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvasAnA", 200, 200);
+				var path1 = paper.path("M 0,0 h 200").attr("stroke", "blue");
+				var anim1 = Raphael.animation({path:"M 0,200 h 200"}, 12000, "linear").repeat("Infinity");
+				path1.animate(anim1);
+				var path2 = paper.path("M 0,0 v 200").attr("stroke", "green");
+				var anim2 = Raphael.animation({path:"M 200,0 v 200"}, 17000, "linear").repeat("Infinity");
+				path2.animate(anim2);
+				var circle = paper.circle(0,0,5).attr("stroke", "red");
+				//frameイベントで円の中心を直線の交点を合わせる．
+				eve.on("raphael.anim.frame." + path1.id,function(){
+					var point = Raphael.pathIntersection(path1.attr("path"), path2.attr("path"))[0];
+					circle.attr({cx:point.x, cy:point.y});
+				});	
+			});</script></div>
+
+	</article>
+
+	<article>
+	<h2>テキストとフォント</h2>
+	<p>
+	テキストを描画するにはPaper.textメソッドを用いる．このメソッドでは文字列の内容が内部に保持されているため，後から自由に中身を書き換えることが出来る．憶えておくべき点は次の通りである．
+	</p>
+	<ul>
+	<li>テキストの中身を書き換えるには，text属性を編集すれば良い．</li>
+	<li>改行を挿入する場合は改行部に「\n」を記述する．それ以外のエスケープシーケンスは無視される．</li>
+	<li>利用できる属性にはtext-anchor，font，font-family，font-size，font-weight，font-styleがある．</li>
+	</ul>
+	<p>
+	Raphaëlではもうひとつ文字列を描画する方法として，Paper.printメソッドが提供されている．これは<a href="https://github.com/sorccu/cufon/wiki/about">Cufón</a>形式のデータを読み込み，フォントとして利用するものだ．Cufónはttfやotf形式のフォントを独自形式の<a href="http://cufon.shoqolate.com/generate/">jsonデータに変換し</a>，html文書に表示させるライブラリだ．フォントの外形をpathに変換して利用するため，環境に依存しないフォント描画が期待できる．Paper.printメソッドではテキストの内容をpathに変換しているため，後からテキストの内容を書き換えると言った処理を行うことができない．Paper.printメソッドを用いるには次のようにする．
+	</p>
+	<ol>
+	<li>Raphael.registerFontメソッドを呼び出し，フォントをライブラリに登録する．</li>
+	<li>Paper.getFontフォントを呼び出し，fontオブジェクトを呼び出す．その際のフォント名称にはフォントデータjsonのfont-family属性の値を指定する．</li>
+	<li>Paper.printメソッドにてテキストを描画する．</li>
+	</ol>
+	<dl>
+	<dt>Raphael.registerFont</dt>
+		<dd>フォントを登録する．registerFont(cufon形式のフォントデータjson)</dd>
+	<dt>Paper.getFont</dt>
+		<dd>フォント設定をオブジェクトとして利用する．getFont(フォント登録名,font-weight,font-style,font-stretch)※フォント登録名以下の指定はフォントデータ内に該当するデータが存在しない場合は無効．</dd>
+	<dt>Paper.print</dt>
+		<dd>文字を描画する．描画の基準は左端からとなる．得られる結果はpath図形オブジェクトとなる．print(x,y,string,font,[size],[origin],[letter_spacing])※originはbaselineかmiddleを指定する．</dd>
+	</dl>
+	<p>参考：下の例を実行する前に行なっている処理．（抜粋）
+	<br/><code><b>Raphael.registerFont(</b>{w:229,face:{<b>"font-family":"whoa"</b>,"font-weight":400,"font-stretch":"normal","units-per-em":"360","panose-1":"2 0 5 0 0 0 0 0 0 0",ascent:"288",descent:"-72",bbox:"-0.738298 -325 315.086 19","underline-thickness":"26.3672","underline-position":"-24.9609","unicode-range":"U+0020-U+007A"},glyphs:{" ":{w:105},"\u00a0":{w:105},"!":{d:"87,-270v25,40,-13,187,-18,168v-…</code>
+	</p>
+			<script type="text/javascript" src="font.js"></script>
+			<div id="canvasText" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				//一般的なテキスト利用方法
+				var paper = Raphael("canvasText", 200, 200);
+				var text = paper.text(100,40,"It's Raphael!").attr("font-size", 20).attr("font-style", "italic");
+				text.attr("text", text.attr("text") + "\nVery Nice!");
+				//事前にwhoaフォントを登録しておくことで，fontオブジェクトを呼び出すことができます．
+				//Raphael.registerFont({w:229,face:{"font-family":"whoa",…
+				//フォントは公式サイトのデモから拝借しました．
+				var font = paper.getFont("whoa");
+				var print = paper.print(0,100, "Use Cufon font!\nIt looks so cool.", font, 20,"baseline",0);
+				print.attr("fill", "90-blue-red");
+			});</script></div>
+	<p>なお，日本語環境ではフォント全体を変換するとデータ量が膨大となってしまうので，使いたい文字のみを抽出するようにしたい．</p>
+	</article>
+
+	<article>
+	<h2>要素ツリーの構造に関わるメソッド群</h2>
+	<p>ベクタグラフィックは内部で（フラットな）階層構造をとるが，<b>要素の順番は図形の重なり順に相当</b>する．先に見た，Element.toFront/toBackはこの順番を入れ替えることで図形の上下関係を変更している．この他図形要素の操作を行うメソッドとしては次のようなものが提供されている．</p>
+	<dl>
+	<dt>Element.clone</dt>
+		<dd>図形要素を複製する．</dd>
+	<dt>Element.id</dt>
+		<dd>図形要素の内部識別子を取得するプロパティ．</dd>
+	<dt>Paper.getById</dt>
+		<dd>図形要素の内部識別子を使って要素を取得する．</dd>
+	<dt>Element.insertAfter</dt>
+		<dd>図形要素を指定した要素の前に挿入する．つまり<b>その要素の下に描画</b>される．insertAfter(element)</dd>
+	<dt style="width:200px;">Element.insertBefore</dt>
+		<dd>図形要素を指定した要素の後に挿入する．つまり<b>その要素の上に描画</b>される．insertBefore(element)</dd>
+	<dt>Element.prev</dt>
+		<dd>要素ツリーにおける前の要素への参照．つまり<b>その要素の下の要素</b>を取得する．一番下の要素はnullを返す．</dd>
+	<dt>Element.next</dt>
+		<dd>要素ツリーにおける次の要素への参照．つまり<b>その要素の上の要素</b>を取得する．一番上の要素はnullを返す．</dd>
+	<dt>Element.remove</dt>
+		<dd>図形要素を描画対象から外す（Paperオブジェクトの管理下から外す）．</dd>
+	<dt>Element.data</dt>
+		<dd>図形要素に付加的な値を設定する．data(key)…値の取得，data(key,value)…値の設定</dd>
+	<dt>Element.removeData</dt>
+		<dd>図形要素に付加された値を削除する．removeData(key)</dd>
+	<dt>Element.paper</dt>
+		<dd>図形要素が所属しているPaperオブジェクト．</dd>
+	<dt>Element.node</dt>
+		<dd>図形要素に対するdom要素を取得する．node()</dd>
+	</dl>
+	<p>
+	このうちElement.nodeメソッドはRaphaëlからよりネイティブなapiにアクセスするために重要な機能で，Raphael.typeでベクタグラフィックの判定処理と組み合わせれば特定の環境での機能を強化する（例えばSVGAnimateElementを追加する）と言った事が可能だ．なお，jQueryに存在した（$(HTMLElement)のような）ネイティブapiからRaphaëlオブジェクトにアクセスすると言った機能は存在しない．
+	</p>
+			<div id="canvasTree" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				//ノードのクローンとinsertBefore
+				var paper = Raphael("canvasTree", 200, 200);
+				var circle = paper.circle(50,50,40).attr("fill", "red");
+				var circle2 = circle.clone().attr({fill: "blue", cx: 70, cy: 70});
+				circle2.insertBefore(circle);
+				//idによる検索と，dataメソッドによるカスタムデータの格納・参照
+				var temp = paper.circle(50,150,40);
+				temp.data("key", "new data");
+				var id = temp.id;
+				var circle3 = paper.getById(id);
+				circle3.attr("fill", "green");
+				paper.text(50,150,circle3.node);
+				paper.text(50,160,circle3.data("key"));
+				if(Raphael.type == "SVG"){
+					circle3.node.style.setProperty("fill", "pink");
+				}
+				//prev要素とnext要素
+				var circle4 = paper.circle(150,50,30).attr("fill", "yellow");
+				var circle5 = paper.circle(150,70,30).attr("fill", "orange");
+				var circle6 = paper.circle(150,90,30).attr("fill", "silver");
+				circle5.prev.attr({stroke:"red", "stroke-width":10});
+				circle5.next.attr({stroke:"gold", "stroke-width":10});
+				//removeメソッドとnext要素の相関
+				var circle7 = paper.circle(150,150,40).attr("fill", "purple");
+				//circle6の次の要素がcircle7の削除によりtext要素に切り替わっている!
+				paper.text(150,160,"remove前:" + circle6.next.id);
+				circle7.remove();
+				paper.text(150,170,"remove後:" + circle6.next.id);
+			});</script></div>
+	</article>
+
+	<article>
+	<h2>ユーティリティーメソッド群</h2>
+	<p>Raphaelでは様々な変換メソッドが提供されている．path文字列やtransform文字列を構成するのに便利だ．</p>
+	<dl>
+	<dt>Raphael.is</dt>
+		<dd>typeof関数のエイリアス．</dd>
+	<dt>Raphael.angle</dt>
+		<dd>3頂点を指定し，2辺に挟まれた角の角度を取得する．angle(x1,y1,x2,y2,x3,y3)線分点1-点3と点2-点3が挟む角の角度．</dd>
+	<dt>Raphael.deg</dt>
+		<dd>ラジアンを角度に変換する．deg(rad)</dd>
+	<dt>Raphael.rad</dt>
+		<dd>角度をラジアンに変換する．rad(deg)</dd>
+	<dt>Raphael.format</dt>
+		<dd>文字列を構築する．fotmat([テンプレート],値0,値1…)</dd>
+	<dt>Raphael.fullfill</dt>
+		<dd>文字列を構築する．fullfill([テンプレート],連想配列)</dd>
+	<dt>Raphael.snapTo</dt>
+		<dd>値をグリッドに合わせる．grid値±toleranceの範囲内にvalueが含まれていた場合，grid値が返される．マウスなどで図形要素を移動させる際，描画の基準をグリッドに固定したい場合に用いる．snapTo(grid_values,value,tolerance)</dd>
+	<dt>Raphael.createUUID</dt>
+		<dd>RFC4122形式のUUID文字列を生成する．</dd>
+	</dl>
+		<div id="canvas_utils" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas_utils", 200, 200);
+				var set = paper.add([
+					{type:"text", x: 100, y: 20, text: Raphael.angle(0,0,100,100,200,0)},
+					{type:"text", x: 100, y: 40, text: Raphael.deg(Math.PI/3)},
+					{type:"text", x: 100, y: 60, text: Raphael.rad(180)},
+					{type:"text", x: 100, y: 80, text: Raphael.format("{0}:{1}:{2}", "abc", 10, "def")},
+					{type:"text", x: 100, y: 100, text: Raphael.fullfill("{a}:{b}:{c}", {a:"ghi", b:99, c:"jkl"})},
+					{type:"text", x: 100, y: 120, text: Raphael.snapTo([5,10,15],12,1)},
+					{type:"text", x: 100, y: 140, text: Raphael.snapTo([5,10,15],12,2)},
+					{type:"text", x: 100, y: 160, text: Raphael.snapTo([5,10,15],12,3)}
+				]).attr({fill:"blue", "font-size": 20});
+			});</script></div>
+	</article>
+
+	<article>
+	<h2>環境に関わるメソッド</h2>
+	<p>クロスブラウザを謳うRaphaëlではあるが，環境によっては描画に不具合が出るケースがある．そのような不具合を解消するためのメソッドが提供されている．なお全ての問題が解決するわけではないので，あくまでサポート的な用途として捉える．</p>
+	<dl>
+	<dt>Raphael.svg</dt>
+		<dd>ブラウザがsvgをサポートするかを判定する．</dd>
+	<dt>Raphael.vml</dt>
+		<dd>ブラウザがvmlをサポートするかを判定する．</dd>
+	<dt>Raphael.type</dt>
+		<dd>ブラウザがサポートするベクタグラフィックの種類を取得する．type()SVG/VML</dd>
+	<dt>Raphael.renderfix</dt>
+		<dd>Firefox，ie9におけるサブピクセルのレンダリングに関わる不具合を解消する．</dd>
+	<dt>Raphael.safari</dt>
+		<dd>safari（webkit）におけるレンダリングの不具合を解消する．webkitではアニメーション処理後に稀に描画のゴミが発生する．このゴミを消すために画面を再描画する．</dd>
+	</dl>
+			<div id="canvas_f" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("canvas_f", 200, 200);
+				var set = paper.add([
+					{type:"text", x: 100, y: 20, text: Raphael.svg},
+					{type:"text", x: 100, y: 40, text: Raphael.vml},
+					{type:"text", x: 100, y: 60, text: Raphael.type}
+				]).attr({fill:"blue", "font-size": 20});
+			});</script></div>
+	</article>
+
+	<article>
+	<h2>機能の拡張</h2>
+	<p>jQuery等のライブラリと同様にRaphaëlにおいても機能の拡張を行うための仕組みが提供されている．よく使う操作を登録しておくことで，開発効率が上がることだろう．</p>
+	<dl>
+	<dt>Raphael.fn</dt>
+		<dd>Paperオブジェクトに独自メソッドを定義する．</dd>
+	<dt>Raphael.st</dt>
+		<dd>Setオブジェクトに独自メソッドを定義する．</dd>
+	<dt>Raphael.el</dt>
+		<dd>図形オブジェクトに独自メソッドを定義する．</dd>
+	<dt>Paper.customAttribute</dt>
+		<dd>カスタム属性を定義する．この属性はElement.attr，Elemnet.animateメソッド等から呼び出すことが出来る．</dd>
+	<dt>Paper.ca</dt>
+		<dd>customAttributeへのショートカット．</dd>
+	<dt>Raphael.ninja</dt>
+		<dd>callするとグローバル変数Raphael変数を削除する．万が一の名称の衝突を解消する為の機構．<br/>
+	実行例:<code>(function(raphael){var paper = raphael("canvas", 200,200);//Raphaelを使った処理})(Raphael.ninja());</code></dd>
+	</dl>
+			<div id="canvas_ex" class="Raphael">
+			<script type="text/javascript">//Paperオブジェクトのもつメソッドを拡張
+			//これらの内容をRaphaelプラグインとして事前に実行しておくことで，カスタムメソッドを利用することができる．
+			//NOTE:Raphael.fnはPaperオブジェクトのプロトタイプを参照している．
+			Raphael.fn.line = function (x1, y1, x2, y2) {
+				return this.path(Raphael.format("M{0},{1} {2},{3}", x1,y1,x2,y2));
+			};
+			//図形オブジェクトのもつメソッドを拡張
+			Raphael.el.red = function(){
+				this.attr({fill: "#f00"});
+			};
+			//Setオブジェクトのもつメソッドを拡張
+			Raphael.st.red = function () {
+				this.forEach(function(el){
+					el.red();
+				});
+			};
+			Raphael(function(){
+				var paper = Raphael("canvas_ex", 200, 200);
+				paper.line(50,50,150,50).attr("line-width", 5);
+				paper.set(paper.circle(50,100,30),paper.rect(100,100,80,40)).red();
+
+				//カスタム属性で複雑な記述を簡略化
+				paper.customAttributes.before = function(text){
+					return {text: text + this.attr("text")};
+				};
+				paper.text(50,160,"本日は晴天なり").attr({"text-anchor":"start",before: "●"});
+				paper.customAttributes.strokeStyle = function (color,width,dash) {
+					return {stroke: color, "stroke-width": width, "stroke-dasharray": dash};
+				};
+				paper.line(50,180,150,180).attr({strokeStyle:["green", 5, "-."]})
+
+			});</script></div>
+	<p>機能の拡張はプラグインの形をとって様々なものがweb上で配布されている．目的にあったプラグインを導入することで，作業効率を大幅に上げることが出来るだろう．</p>
+	</article>
+	<article>
+	<h2>svg画像をRaphaëlで読み込む方法</h2>
+	<p>Raphaël自体にsvg画像をロードする機能は存在しないが，事前にsvg画像ファイルをRaphaëlで処理可能なjson形式に変換することでブラウザ上に表示させることは可能である．svgは単なるxmlファイルであるから，テキストファイルを扱えるプログラム言語であれば，原理的にはどのようにでも変換可能だが，ここではxslを使った変換を紹介する．xslはxml文書に対する見た目を制御する言語だが，プレーンテキストの出力も可能であり，この機能を用いてsvgからjsファイルへ変換するのが最も簡単だと思われる．なお，xslの使い方についてはスタイル指定の項で触れたので，そちらを参照して欲しい．</p>
+	<p>
+	下記はsvgファイルからpath要素を取得し，fill，stroke，stroke-width，opacity，fill-opacity，stroke-opacigyの各属性をRaphaëlで読み込み可能なjson形式にするxslのサンプルコードである．機能を必要最低限度に絞った分，コード量はかなり少なめである．
+	</p>
+	<div class="svg">
+		<div style="margin-left:30px;">
+		<code>
+	&lt;?xml version="1.0" standalone="no"?&gt;<br/>
+	&lt;xsl:stylesheet version="1.0"<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsl="http://www.w3.org/1999/XSL/Transform"<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;xmlns:svg="http://www.w3.org/2000/svg"&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&lt;xsl:output method="text" encoding="utf-8" omit-xml-declaration="yes" indent="no"/&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&lt;xsl:template match="svg:svg"&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//svgからpath要素を抽出してRaphaelで読み込み可能なjson形式に変換する．<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var elements = [{type:"path", path:"m 0,0"}<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;xsl:apply-templates/&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;];<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&lt;/xsl:template&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&lt;xsl:template match="svg:path"&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;,{type:"path",path:"&lt;xsl:value-of select="string(@d)"/&gt;",<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;!--fill--&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;xsl:if test="not(@fill)"&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fill:"black",<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/xsl:if&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;xsl:if test="@fill"&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fill:"&lt;xsl:value-of select="string(@fill)"/&gt;",<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/xsl:if&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;!--stroke--&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;xsl:if test="not(@stroke)"&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stroke:"none",<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/xsl:if&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;xsl:if test="@stroke"&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stroke:"&lt;xsl:value-of select="string(@stroke)"/&gt;",<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/xsl:if&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;!--stroke-width--&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;xsl:if test="@stroke-width"&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"stroke-width":"&lt;xsl:value-of select="string(@stroke-width)"/&gt;",<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/xsl:if&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;xsl:if test="not(@stroke-width)"&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"stroke-width":"1",<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/xsl:if&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;!--opacity--&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;xsl:if test="@opacity"&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;opacity:"&lt;xsl:value-of select="string(@opacity)"/&gt;",<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/xsl:if&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;xsl:if test="@fill-opacity"&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"fill-opacity":"&lt;xsl:value-of select="string(@fill-opacity)"/&gt;",<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/xsl:if&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;xsl:if test="@stroke-opacity"&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"stroke-opacity":"&lt;xsl:value-of select="string(@stroke-opacity)"/&gt;"<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/xsl:if&gt;<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id:"&lt;xsl:value-of select="string(@id)"/&gt;"<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&lt;/xsl:template&gt;<br/>
+	&lt;/xsl:stylesheet&gt;
+		</code>
+		</div>
+	</div>
+	<p>これを任意のsvgに適用して目的のjsonコードを得るのだが，その際に注意すべき点がある．これらの処理は事前にドローイングツールのsvg出力設定で指定可能な場合がある．</p>
+	<ul>
+	<li>path要素だけで画像を作る．処理対象の要素を絞ることでxsl等の処理を簡略化することが出来る．なおrect要素やcircle要素も同様にして処理可能だがここでは省略した．</li>
+	<li>style属性を使わない．style属性で見た目を設定していた場合，内容を分解せねばならず，xsl等でRaphaël形式のjsonコードに変換する際の妨げとなる．（この意味でinkscapeとRaphaëlとは食い合わせが悪い．inkscapeではstyle属性での色の指定しかできない．）</li>
+	<li>フラットな構造とする．グループ化は最終的に解除する．</li>
+	<li>svgとRaphaëlとで仕様が異なるため，fillやstrokeにはグラデーションなどの設定は使わないで，単色での指定をする．</li>
+	</ul>
+	<p>何れも短いコードで実用的な処理結果を得るためのものだが，もちろんもっと複雑な処理を行うことも出来る．しかしそのような処理はsvgの仕様をjavascriptで再定義している事にほかならない．事前にツールによる出力結果に制約を掛ける方が得策である．</p>
+	<p>なおjsonデータを一旦elementsグローバル変数に格納し，paper.addメソッドに渡しているが，コールバック関数を使った処理としても良い．要件によって自由に書き換えて使って欲しい．実際はかなりの制約が存在するので利用できる場面は限られてしまうが，憶えておいて損はないだろう．</p>
+		<div id="canvas_from" class="Raphael">
+			<script type="text/javascript">//jQueryを使っています．
+			$("<script>")
+				.attr("type", "text/javascript")
+				.attr("src", "tiger.js")
+				.appendTo("head");
+			Raphael(function(){
+				var paper = Raphael("canvas_from", 200, 200).setViewBox(0,0,500,500,false);
+				paper.add(elements);
+			});</script></div>
+	</article>
+
+	<article>
+	<h2>svgdomとの連携</h2>
+	<p>レガシーie環境との互換性を無視することとなるが，Raphaëlをsvg図形描画のユーティリティーとして利用し，svgdomによる描画処理とを混在させることもできる．Raphaël内部で管理されているグラフィック構造を破壊しないようにする必要があるが，Raphaël単体では無理な機能（例えば外部svgファイルで設定されているグラデーションやクリップパス情報の参照等）をsvgdomの機能を使って実現することが可能である．</p>
+			<svg>
+				<!--外部のsvg定義-->
+				<defs>
+					<clipPath id="cp">
+						<circle cx="80" cy="80" r="60"/>
+						<rect x="80" y="80" width="100" height="100"/>
+					</clipPath>
+				</defs>
+				<rect clip-path="url(#cp)" fill="red" x="20" y="20" width="160" height="160"/>
+			</svg>
+			<div id="raphael_dom" class="Raphael">
+			<script type="text/javascript">Raphael(function(){
+				var paper = Raphael("raphael_dom", 200, 200);
+				var rect = paper.rect(20, 20, 160, 160);
+				var domElem = rect.node;
+				domElem.style.setProperty("fill", "red");
+				domElem.style.setProperty("stroke-width", "0");
+				domElem.style.setProperty("clip-path", "url(#cp)");
+			});</script></div>
+	<p>この他にもRaphaëlが生成したsvgソースを取得すると言ったこともできる．</p>
+	</article>
+
+</section>
+		<script type="text/javascript">
+$(function(){
+	$("body").hide();
+	$("div.Raphael").each(asideSvgSource);
+	$("body").show();
+	function asideSvgSource(){
+		var div = $(this);
+		div.addClass("svg");
+		var newElem = $("<code>");
+		newElem.html(fixSvgHTML(div[0].getElementsByTagName("script")[0].innerHTML));
+		div.append($("<div>").append(newElem));
+	}
+	function fixSvgHTML(innerHTML){
+		return innerHTML.replace(/\n\t\t/g, "\n")
+			.replace(/\>\<\/.+?\>/g,"/>")
+			.replace(/\n\s*?\n/g, "\n")
+			.replace(/\shref\=/g, " xlink:href=")
+			.replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")
+			.replace(/\</g, "&lt;")
+			.replace(/\>/g, "&gt;")
+			.replace(/\n/g, "<br/>");
+	}
+});
+		</script>
+	</body>
+
+</html>

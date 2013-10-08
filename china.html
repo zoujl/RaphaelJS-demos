@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Raphaël · China Map - http://raphaeljs.com/</title>
+<style media="screen">
+body {
+	background: #333;
+	color: #fff;
+	font: 300 100.1% "Helvetica Neue", Helvetica, "Arial Unicode MS", Arial, sans-serif;
+}
+#tips{ display:inline-block; *display:inline; *zoom:1; position:absolute; left:-9999em; top:-9999em;
+    color:#fff; background:#000; border-radius:3px; line-height:30px; padding:0 15px;}
+#chinamap{ width:580px; height:480px; margin:50px auto;}
+
+</style>
+</head>
+<body>
+<div id="chinamap"></div>
+<div id="tips"></div>
+
+<script src="js/jquery-1.7.2.min.js"></script>
+<script src="js/raphael.js"></script>
+<script src="js/china.js"></script>
+<script>
+    
+    var $tooltip = $('#tips');
+
+    //Raphael(10, 10, 560, 470, function () {
+    Raphael('chinamap', 580, 480, function () {
+        /*var r = this, paths = [];
+        r.rect(0, 0, 580, 480, 10).attr({
+            stroke: "none",
+            fill: "0-#9bb7cb-#adc8da"         
+        });*/
+        var r = this;
+        var over = function () {
+            this.c = this.c || this.attr("fill");
+            this.stop().animate({fill: "#bacabd"}, 500);
+        },
+        out = function () {
+            this.stop().animate({fill: this.c}, 500);
+        };
+        r.setStart();
+        //var hue = Math.random();
+        for (var province in chinamap.shapes) {
+            // var c = Raphael.hsb(Math.random(), .5, .75);
+            // var c = Raphael.hsb(.11, .5, Math.random() * .25 - .25 + .75);
+            //r.path(chinamap.shapes[province]).attr({stroke: "#ccc6ae", fill: "#f0efeb", "stroke-opacity": 0.25});
+            var svgPath = r.path(chinamap.shapes[province]).attr({
+                    "stroke": "#ddd", 
+                    "fill": "#f5f5f5", 
+                    "stroke-width": 1, 
+                    "stroke-linejoin": "round"
+                });
+
+            (function(a, b){
+                $(a).css('cursor', 'pointer')
+                 .click(function(){
+                    if (chinamap.urls[b]) {
+                        var url = chinamap.urls[b] + b.toLowerCase();
+                        if (window.confirm('您选中了' + chinamap.names[b] + '，点击确定自动跳转。\n其链接为：' + url)) {
+                            window.open(url);
+                        } else {
+                            return false;
+                        }
+                    }
+                }).hover(function(e){
+                    $tooltip
+                        .text(chinamap.names[b])
+                        .css({
+                            opacity: '0.75',
+                            top: (e.pageY + 10) + 'px',
+                            left: (e.pageX + 10) + 'px'
+                        }).stop().animate({opacity: 'show'}); 
+                }, function(){
+                    $tooltip.stop().animate({opacity: 'hide'})
+                });
+            })(svgPath[0], province);                
+        }
+        var china = r.setFinish();
+        china.hover(over, out);
+        
+        china.animate({fill: "#ccc", stroke: "#666"}, 450);
+        //china.animate({fill: "#999", stroke: "#666"}, 2000);
+
+        /*china.getXY = function (lat, lon) {
+            return {
+                cx: lon * 2.6938 + 465.4,
+                cy: lat * -2.6938 + 227.066
+            };
+        };
+        china.getLatLon = function (x, y) {
+            return {
+                lat: (y - 227.066) / -2.6938,
+                lon: (x - 465.4) / 2.6938
+            };
+        };
+        var latlonrg = /(\d+(?:\.\d+)?)[\xb0\s]?\s*(?:(\d+(?:\.\d+)?)['\u2019\u2032\s])?\s*(?:(\d+(?:\.\d+)?)["\u201d\u2033\s])?\s*([SNEW])?/i;
+        china.parseLatLon = function (latlon) {
+            var m = String(latlon).split(latlonrg),
+                lat = m && +m[1] + (m[2] || 0) / 60 + (m[3] || 0) / 3600;
+            if (m[4].toUpperCase() == "S") {
+                lat = -lat;
+            }
+            var lon = m && +m[6] + (m[7] || 0) / 60 + (m[8] || 0) / 3600;
+            if (m[9].toUpperCase() == "W") {
+                lon = -lon;
+            }
+            return this.getXY(lat, lon);
+        };
+
+        try {
+            navigator.geolocation && navigator.geolocation.getCurrentPosition(function (pos) {
+                r.circle().attr({fill: "none", stroke: "#f00", r: 5}).attr(china.getXY(pos.coords.latitude, pos.coords.longitude));
+            });
+        } catch (e) {}*/
+        
+    });
+</script>
+</body>
+</html>

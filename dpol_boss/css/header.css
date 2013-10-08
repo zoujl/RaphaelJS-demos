@@ -1,0 +1,54 @@
+.seoTxt {
+    position: absolute;
+    left: -9999em;
+    top: -9999em;
+    text-indent: -9999em;
+}
+
+.dpol_logo_lk a,
+.dpol_logo_bg {
+    left: 190px;
+    top: 25px;
+}
+
+.dpol_logo_lk a {
+    text-indent: -9999em;
+    z-index: 8;
+}
+
+.dpol_logo_bg {
+    z-index: 7;
+}
+
+.links {
+    position: absolute;
+    left: 260px;
+    top: 2px;
+    color: #bcbcbc;
+    z-index: 10;
+}
+
+.links a {
+    margin: 5px;
+    color: #bcbcbc;
+}
+
+.links a:hover {
+    color: #ffdd11;
+    text-decoration: underline;
+}
+
+.share {
+    position: absolute;
+    left: 170px;
+    top: 2px;
+    color: #bcbcbc;
+    z-index: 10;
+}
+
+#target {
+    position: absolute;
+    left: 30px;
+    top: 4px;
+    width: 160px;
+}

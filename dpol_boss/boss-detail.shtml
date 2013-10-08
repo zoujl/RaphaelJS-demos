@@ -1,0 +1,490 @@
+<!DOCTYPE HTML>
+<html> 
+<head> 
+    <meta charset="utf-8"/> 
+    <title>斗破历程 在此启航  -《斗破苍穹OL》官方网站</title>
+    <meta name="keywords" content="斗破,斗破苍穹,斗破苍穹OL,斗破历程,斗破BOSS">
+    <meta name="description" content="这里汇聚了众多强悍的BOSS，邪恶小医仙、穆兰三老、云山…这些耳熟能详的名字都将成为你晋阶路上的考验，你准备好面对他们了么？" />
+    <meta name="author" content="Design:Che Weichun, Layout:ZouJL"/>
+    <link type="image/x-icon" href="http://dpol.changyou.com/favicon.ico" rel="icon"/>
+    <link type="image/x-icon" href="http://dpol.changyou.com/favicon.ico" rel="shortcut icon" />
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="css/subpage.css" />
+</head>
+<body>
+    
+<div id="header">
+    <div class="header-wrap">
+        <h1 class="seoTxt">斗破历程，在此启航</h1>
+        <p class="seoTxt">让我们一起跟随斗破的脚步共同成长</p>
+        
+        <div class="dpol_logo_lk">
+            <a href="http://dpol.changyou.com/main.shtml" target="_blank" title="斗破苍穹OL官方网站">斗破苍穹OL官方网站</a>
+        </div>
+        <div class="dpol_logo_bg"></div>
+
+        <div class="links">
+            <a href="http://dpol.changyou.com/main.shtml" target="_blank" title="官网首页">官网首页</a>
+            |
+            <a href="http://member.changyou.com/register/regPhoneSmAction.do?gametype=PE-DPCQ" target="_blank" title="注册账号">注册账号</a>
+            |
+            <a href="http://dpol.changyou.com/download/index.shtml" target="_blank" title="下载游戏">下载游戏</a>
+        </div>
+
+        <div class="share">
+            <div class="title">分享</div>
+            <div id="target"></div>
+        </div>
+
+        <div class="header-button">
+            <a class="home" href="index.shtml" title="返回首页">返回首页</a>
+            <div class="dropbox">
+                <span tabindex="0">BOSS总览</span>
+                <div>
+                    <a href="javascript:void(0);">天毒女</a>
+                    <a href="javascript:void(0);">云山</a>
+                    <a href="javascript:void(0);">萧烈</a>
+                    <a href="javascript:void(0);">雁落天</a>
+                    <a href="javascript:void(0);">古茜</a>
+                    <a href="javascript:void(0);">慕兰三老—狮长老</a>
+                    <a href="javascript:void(0);">慕兰三老—熊长老</a>
+                    <a href="javascript:void(0);">慕兰三老—虎长老</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="fix4ie6"></div>
+</div>
+
+<div id="loading"></div>
+
+<div id="wraper">
+    <div class="wrap">
+        <img class="wrap-bg" src="images/b0.jpg" data-thumb="images/t0.jpg" alt="天毒女">
+    </div>
+    <div class="wrap">
+        <img class="wrap-bg" src="images/b1.jpg" data-thumb="images/t1.jpg" alt="云山">
+    </div>
+    <div class="wrap">
+        <img class="wrap-bg" src="images/b2.jpg" data-thumb="images/t2.jpg" alt="萧烈">
+    </div>
+    <div class="wrap">
+        <img class="wrap-bg" src="images/b3.jpg" data-thumb="images/t3.jpg" alt="雁落天">
+    </div>
+    <div class="wrap">
+        <img class="wrap-bg" src="images/b4.jpg" data-thumb="images/t4.jpg" alt="古茜">
+    </div>
+    <div class="wrap">
+        <img class="wrap-bg" src="images/b5.jpg" data-thumb="images/t5.jpg" alt="慕兰三老—狮长老">
+    </div>
+    <div class="wrap">
+        <img class="wrap-bg" src="images/b6.jpg" data-thumb="images/t6.jpg" alt="慕兰三老—熊长老">
+    </div>
+    <div class="wrap">
+        <img class="wrap-bg" src="images/b7.jpg" data-thumb="images/t7.jpg" alt="慕兰三老—虎长老">
+    </div>
+    <div class="pattern"></div>   
+</div>
+
+<div id="content-wrap">
+    <div class="thumbs" id="wp_thumbs">
+        <span id="zoom" class="zoom"></span>
+        <img src="images/t0.jpg" />
+    </div>
+
+    <div class="next">&#139;</div>
+    <div class="prev">&#155;</div>
+
+    <div id="content-detail">
+        <div class="content" id="content1">
+            <h2>天毒女</h2>
+            <h3>【挑战副本】</h3>
+            <P>· 天毒女要塞终极BOSS</P>
+            <h3>【出场语】</h3>
+            <P>· 一群毛头小鬼，听到我毒宗的名号还敢来战，是没把我天毒女放在眼里了！</P>
+            <h3>【擅长斗技】</h3>
+            <P>· 厄难毒劲—DEBUFF技能，天毒女会给予当前攻击对象一个持续性的高伤害DEBUFF；</P>
+            <p>· 元素之威—AOE技能，天毒女会随机释放冰封万里、火烧千军、风卷残云、天毒牢界四种元素伤害中的一种；</P>
+            <p>· 天毒援护—天毒女将召唤大量高防御的毒宗护法来保护自己；</P>
+            <p>· 毒宗秘蛊—天毒女施展毒宗秘术，召唤一批巫毒娃娃，玩家站在巫毒娃娃周围将会受到大量持续伤害。</P>
+        </div>
+        <div class="content" id="content2">
+            <h2>云山</h2>
+            <h3>【挑战副本】</h3>
+            <P>· 决战生死门终极BOSS</P>
+            <h3>【出场语】</h3>
+            <P>· 你们这群蝼蚁能闯入我云岚宗密境，我会让你们死的毫无痛楚！</P>
+            <h3>【擅长斗技】</h3>
+            <p>· 风旋—减速DEBUFF，使用云岚秘法让玩家减速；</P>
+            <p>· 风壁—击晕技能，动用风的力量重击玩家，使其眩晕；</P>
+            <p>· 风刹—动用闪电的力量，对相互靠近的玩家造成巨大伤害。</P>
+        </div>
+        <div class="content" id="content3">
+            <h2>萧烈</h2>
+            <h3>【挑战副本】</h3>
+            <P>· 决战生死门1号BOSS</P>
+            <h3>【出场语】</h3>
+            <P>· 掂量下自己的斤两，想要见云山，先过我萧烈这关！</P>
+            <h3>【擅长斗技】</h3>
+            <P>· 森罗万象—AOE技能，通过让灵魂爆炸来攻击玩家；</P>
+            <p>· 九森百噬魂—狂暴BUFF，吸收玩家的灵魂提升自身力量；</P>
+            <p>· 九森千噬魂—狂暴BUFF，可以吸收更多的力量；</P>
+            <p>· 九森万噬魂—狂暴BUFF，终极技能。</P>
+        </div>
+        <div class="content" id="content4">
+            <h2>雁落天</h2>
+            <h3>【挑战副本】</h3>
+            <P>· 天毒女要塞1号BOSS</P>
+            <h3>【出场语】</h3>
+            <P>· 我便是金雁宗宗主雁落天，只要你们乖乖投降，我便放你们一条生路！</P>
+            <h3>【擅长斗技】</h3>
+            <P>· 金雁吞天—AOE技能，对周围的玩家造成伤害；</P>
+            <p>· 回光—治疗系技能，每隔一段时间，BOSS都是为自身回复血量，每次回复的血量越来越大；</P>
+            <p>· 狂暴之怒—在限定时间内不能将其击败，则会触发狂暴之怒技能，攻击力大幅提升。</P>
+        </div>
+        <div class="content" id="content5">
+            <h2>古茜</h2>
+            <h3>【挑战副本】</h3>
+            <P>· 决战生死门2号BOSS</P>
+            <h3>【出场语】</h3>
+            <P>· 你们竟然打败了萧烈，但是终究还是一群灰尘！</P>
+            <h3>【擅长斗技】</h3>
+            <P>· 魂之葬礼—AOE技能，发动灵魂攻击玩家；</P>
+            <p>· 古魂—AOE技能，调动古族的亡魂，对玩家进行攻击；</P>
+            <p>· 灵魂燃烧—DEBUFF技能，随机燃烧一名玩家的灵魂，使其持续受到伤害。</P>
+        </div>
+        <div class="content" id="content6">
+            <h2>慕兰三老</h2>
+            <h3>【挑战副本】</h3>
+            <P>· 天毒女要塞2号BOSS</P>
+            <h3>【出场语】</h3>
+            <P>· 哎呦不错嘛！你们居然打败了雁落天那个老小子，还得让我们慕兰谷三老来收拾残局。</P>
+            <h3>【擅长斗技】</h3>
+            <P>· 防御极限—加持类BUFF，当慕兰三老相互靠近时，可以互相增加彼此的防御；</P>
+            <p>· 斗气极限—转换类BUFF，穆兰三老可以相互传递力量攻击、灵魂攻击等BUFF，以增强实力；</P>
+            <p>· 三兽蛮荒决—复活技能，穆兰三老的终极底牌，如果不在15秒内将他们全部消灭，则三个长老会满血复活。</P>
+        </div>
+        <div class="content" id="content7">
+            <h2>慕兰三老</h2>
+            <h3>【挑战副本】</h3>
+            <P>· 天毒女要塞2号BOSS</P>
+            <h3>【出场语】</h3>
+            <P>· 哎呦不错嘛！你们居然打败了雁落天那个老小子，还得让我们慕兰谷三老来收拾残局。</P>
+            <h3>【擅长斗技】</h3>
+            <P>· 防御极限—加持类BUFF，当慕兰三老相互靠近时，可以互相增加彼此的防御；</P>
+            <p>· 斗气极限—转换类BUFF，穆兰三老可以相互传递力量攻击、灵魂攻击等BUFF，以增强实力；</P>
+            <p>· 三兽蛮荒决—复活技能，穆兰三老的终极底牌，如果不在15秒内将他们全部消灭，则三个长老会满血复活。</P>
+        </div>
+        <div class="content" id="content8">
+           <h2>慕兰三老</h2>
+            <h3>【挑战副本】</h3>
+            <P>· 天毒女要塞2号BOSS</P>
+            <h3>【出场语】</h3>
+            <P>· 哎呦不错嘛！你们居然打败了雁落天那个老小子，还得让我们慕兰谷三老来收拾残局。</P>
+            <h3>【擅长斗技】</h3>
+            <P>· 防御极限—加持类BUFF，当慕兰三老相互靠近时，可以互相增加彼此的防御；</P>
+            <p>· 斗气极限—转换类BUFF，穆兰三老可以相互传递力量攻击、灵魂攻击等BUFF，以增强实力；</P>
+            <p>· 三兽蛮荒决—复活技能，穆兰三老的终极底牌，如果不在15秒内将他们全部消灭，则三个长老会满血复活。</P>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+(function(){
+    var option = "{ name:'dpcq',skins:[0,'dark',0]}";
+    var script = document.createElement('script');
+    script.setAttribute('type', 'text/javascript');
+    script.setAttribute('src', 'http://www.changyou.com/js/cyou_public.js');
+    script.setAttribute('id', 'cyou_public_js');
+    script.setAttribute('options', option);
+    document.getElementsByTagName('head')[0].appendChild(script);   
+})();
+</script>
+<script src="js/jquery-1.8.3.min.js"></script>
+<script src="js/jquery.flip.min.js"></script>
+<script src="js/jquery.mousewheel.js"></script>
+<script>
+/*
+the images preload plugin
+*/
+(function($) {
+    $.fn.preload = function(options) {
+        var opts = $.extend({}, $.fn.preload.defaults, options)
+            , o = $.meta ? $.extend({}, opts, this.data()) : opts
+            , c = this.length
+            , l = 0;
+        return this.each(function() {
+            var $i  = $(this);
+            $('<img/>').load(function(i){
+                ++l;
+                if(l == c) o.onComplete();
+            }).attr('src',$i.attr('src'));  
+        });
+    };
+    $.fn.preload.defaults = {
+        onComplete  : function(){return false;}
+    };
+})(jQuery);
+function getQueryString(name) {
+    var reg = new RegExp("(^|\\?|&)"+ name +"=([^&]*)(\\s|&|$)", "i");
+    if (reg.test(location.href)) return decodeURI(RegExp.$2.replace(/\+/g, " "));
+    return '';
+}
+function escapePlainTextToHTML(plainText) {
+    return plainText.replace(/\0/g, '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+</script>
+<script>
+$(function(){
+    // 下拉
+    var $dropbox = $('.dropbox > div').slideUp(0);
+    $('.dropbox span').on({
+        // 鼠标移入
+        mousedown: function( e ){
+            $dropbox.slideDown();
+        }
+        // 点击
+        , click: function( e ){
+            e.preventDefault();
+        }
+        // 失去焦点
+        , blur: function( e ){
+            setTimeout(function(){
+                $dropbox.slideUp();
+            }, 50);
+        }
+    });  
+    
+    var $wp = $('#wraper')
+        , $wp_bg = $wp.find('.wrap-bg')
+        , $wp_wraps = $wp.find('.wrap')
+        , $wp_img = $wp_wraps.find('img')
+        , $wp_wrap = $wp_wraps.eq(0)
+        , $wp_thumbs = $('#wp_thumbs')
+        , $content = $('#content-detail')
+        , total = $wp_wraps.length
+        , current = 0
+        , $next = $('.next')
+        , $prev = $('.prev')
+        , $loading = $('#loading')
+        , $drop = $dropbox.find('a');    
+    
+    var initIdx = escapePlainTextToHTML( getQueryString('idx') );
+    initIdx = parseInt( initIdx );
+    initIdx = initIdx || 0;
+    if( initIdx == total ) initIdx = 0;
+    else if( initIdx < 0 ) initIdx = total - 1;  
+    // init
+    //preload the images                
+    $wp_img.preload({
+        onComplete  : function(){
+            $loading.hide();
+            init('Horz');
+        }
+    });    
+
+    //shows the first image and initializes events
+    function init(dir){
+        var voh = dir || 'Vert';            
+        //get dimentions for the image, based on the windows size
+        var dim = getDim();
+        //set the returned values and show the image
+        $('#header, #content-wrap, .next, .prev').fadeIn();
+        // console.log( $wp_wraps.eq( initIdx ) )
+        $wp_wrap = $wp_wraps.eq( initIdx );
+        $wp_wrap.fadeIn();
+		$('.content').fadeOut();
+		var content_id = '#content' + (initIdx + 1)
+		$(content_id).fadeIn();
+
+        if( voh == 'Vert' ){
+            var flipDir = (voh == 'next') ? 'tb' : 'bt';
+        }else{
+            var flipDir = (voh == 'next') ? 'rl' : 'lr';
+        }
+        $wp_thumbs.flip({
+            direction   : flipDir,
+            speed       : 400,
+            onBefore    : function(){
+                //the new thumb is set here
+                var content = '<span id="zoom" class="zoom"></span>';
+                content     +='<img src="' + $wp_img.eq(initIdx).data('thumb') + '"/>';
+                $wp_thumbs.html(content);
+            }
+        });
+
+        $drop.eq( initIdx ).addClass('active').siblings('.active').removeClass('active');
+        
+        //scroll( initIdx, 'Horz' );
+    
+        //resizing the window resizes the $tf_bg_img
+        $(window).bind('resize', function(){
+            var dim = getDim();
+            $wp.css({
+                width: dim.width
+            });
+        });
+        
+        //click the arrow down, scrolls down
+        $next.bind('click', function(){
+            if($wp_wrap.is(':animated'))
+                return false;
+            scroll('next', voh);
+        });
+        
+        //click the arrow up, scrolls up
+        $prev.bind('click', function(){
+            if($wp_wrap.is(':animated'))
+                return false;
+            scroll('prev', voh);
+        });
+        
+        //mousewheel events - down / up button trigger the scroll down / up
+        /*$(document).mousewheel(function(e, delta) {
+            if($wp_wrap.is(':animated'))
+                return false;
+                
+            if(delta > 0)
+                scroll('prev', voh);
+            else
+                scroll('next', voh);
+            return false;
+        });*/
+        
+        //key events - down / up button trigger the scroll down / up
+        $(document).keydown(function(e){
+            if($wp_wrap.is(':animated'))
+                return false;
+            
+            switch(e.which){
+                case 37:
+                case 38:    
+                    scroll('prev', voh);
+                    break;
+                case 39:
+                case 40:    
+                    scroll('next', voh);
+                    break;
+            }
+        });
+    }
+    
+    //show next / prev image
+    function scroll(dir, vertOrHorz){
+        $('#header, .next, .prev').fadeOut();
+        //if dir is "next" (top -> bottom, ) increment current then "bt" decrement it, 
+        //else if "rl" (right -> left) increment current then "lr" decrement it,        
+        //vertOrHorz: scroll Vertical(Vert) or Horizontal(Horz)
+        var vert = (vertOrHorz=='Vert') ? true : false;
+        if( typeof dir == 'number' ){
+            current = dir;
+        }else{
+            current = (dir == 'next') ? current + 1 : current - 1;
+        }            
+        
+        //we want a circular slideshow, 
+        //so we need to check the limits of current
+        if(current == total) current = 0;
+        else if(current < 0) current = total - 1;       
+
+        //we get the next image
+        var $wp_wrap_next   = $wp_wraps.eq(current),
+            //its dimentions
+            dim = getDim($wp_wrap_next);
+
+        //the top should be one that makes the image out of the viewport
+        //the image should be positioned up or down depending on the direction
+        if( vert ){
+            var top = (dir == 'next') ? '760px' : '-760px'
+                , left = 0
+                , slideTo = (dir == 'next') ? '-760px' : '760px'
+                , aniNext = {top: 0}
+                , aniPrev = {top: slideTo}
+                , flipDir = (dir == 'next') ? 'tb' : 'bt';
+
+        }else{
+            var top = 0
+                , left = (dir == 'next') ? $(window).width() + 'px' : -parseFloat(dim.width, 10) + 'px'
+                , slideTo = (dir == 'next') ? -$wp_wrap.width() + 'px' : $(window).width() + 'px'
+                , aniNext = {left: 0}
+                , aniPrev = {left: slideTo}
+                , flipDir = (dir == 'next') ? 'rl' : 'lr';
+        }
+
+        //flip the thumb
+        $wp_thumbs.flip({
+            direction   : flipDir,
+            speed       : 400,
+            onBefore    : function(){
+                //the new thumb is set here
+                var content = '<span id="zoom" class="zoom"></span>';
+                content     +='<img src="' + $wp_img.eq(current).data('thumb') + '"/>';
+                $wp_thumbs.html(content);
+            }
+        });
+                
+        //set the returned values and show the next image   
+        $wp_wrap_next.css({
+            left    : left,
+            top     : top
+        }).show().fadeIn();
+        // console.log( $wp_wrap_next );
+                
+        // Horizontal
+        $wp_wrap_next.stop().animate(aniNext, 1000);
+
+        $wp_wrap.stop().animate(aniPrev, 1000, function(){
+            //hide it
+            $(this).hide();
+            $('#header, .next, .prev').fadeIn();
+            $content.children()
+                .eq(current)
+                .show();
+            //the $wp_wrap is now the shown image
+            $wp_wrap = $wp_wrap_next;
+        });
+        //hide the current description  
+        $content.children(':visible').hide();
+        $drop.eq( current ).addClass('active').siblings('.active').removeClass('active');
+    
+    }
+    
+    //animate the image to fit in the viewport
+    function resize($wrap){     
+        var w_w = $(window).width(),
+            w_h = $(window).height();
+
+        w_w = (w_w > 980) ? w_w : 980;
+        w_h = (w_h > 760) ? 760 : w_h;
+        
+        $wp.animate({
+            width   : w_w
+        }, 350);
+    }
+    
+    function getDim(){
+        var w_w = $(window).width(),
+            w_h = $(window).height();
+
+        w_w = (w_w > 980) ? w_w : 980;
+        w_h = (w_h > 760) ? 760 : w_h;
+
+        return {
+            width   : w_w
+        };
+    }
+
+    // 下拉点击事件
+    $drop.on('click', function(){
+        var $this = $(this);
+        if( $this.hasClass('active') ) return false;
+        $this.addClass('active').siblings('.active').removeClass('active');
+        var idx = $this.index();
+        scroll( idx, 'Horz' );
+        return false;
+    });
+
+});
+</script>
+</body>
+</html>

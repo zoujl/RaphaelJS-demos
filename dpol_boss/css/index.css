@@ -1,0 +1,49 @@
+@charset "utf-8";
+
+@import url(http://dpol.changyou.com/logo/dpol_logo.css);
+
+/* global */
+body {
+    width: auto;
+    line-height: 24px;
+    color: #C59979;
+    font-family: Tahoma;
+    font-size: 12px;
+    background: #181818 url(../images/body_bg.jpg) center 44px no-repeat;
+    overflow-x: hidden;
+    min-width: 1000px;
+    _width: expression((documentElement.clientWidth < 1000) ? '1000px' : 'auto' );
+}
+
+/*
+** #content
+ */
+#content{
+    width: 1000px;
+    height: 1056px;
+    margin: 0 auto;
+    background: url(../images/content_bg.jpg) left top no-repeat;
+    position: relative;
+}
+
+/*
+** #raphael-wrap
+ */
+#raphael-wrap{
+    width: 1652px;
+    height: 1056px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    margin-left: -826px;
+}
+#anchor {
+    width: 1652px;
+    height: 1056px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+#activate{
+    z-index: 2;
+}

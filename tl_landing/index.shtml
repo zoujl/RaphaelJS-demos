@@ -1,0 +1,231 @@
+<!DOCTYPE HTML>
+<html> 
+<head> 
+    <meta charset="utf-8"/> 
+    <title>天龙着陆页</title>
+    <meta name="keywords" content="关键字" />
+	<meta name="description" content="页面描述" />
+	<meta name="author" content="Design:Lixing, Layout:ZouJL"/>
+	<link type="image/x-icon" href="/favicon.ico" rel="icon"/>
+	<link type="image/x-icon" href="/favicon.ico" rel="shortcut icon"/>
+	<link rel="stylesheet" href="//tl.changyou.com/css/reset.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+    #wrapper{
+        width: 1000px;
+        margin: 30px auto;
+    }
+    h1{
+        margin: 15px auto;
+    }   
+
+    </style>
+</head>
+<body>
+<div id="wrapper">
+    <div class="button-loader">
+        <a href="ssss">59秒下载</a>
+        <div id="loader">
+            <!-- <img class="png" src="images/loader.png" /> -->
+        </div>
+    </div>
+
+    <div id="slide-nav">
+        <div class="slide-shadow">
+            <div></div>
+        </div>
+        <ul class="nav">
+            <li class="nav1">
+                <span>六年沉淀提炼六大游戏特色</span>
+                <i></i>
+            </li>
+            <li class="nav2">
+                <span>精美画面圆您一个武侠梦想</span>
+                <i></i>
+            </li>
+            <li class="nav3">
+                <span>八千万端游玩家的共同选择</span>
+                <i></i>
+            </li>
+        </ul>
+    </div>
+    <div id="slide-content">
+        <div class="feature">
+            <div class="default"></div>
+            <div id="activate"></div>
+            <div id="anchor"></div>
+            <div id="tipsTxt"></div>
+        </div>
+        <div class="screen"></div>
+        <div class="choose"></div>
+    </div>
+</div>
+<script src="js/jquery-1.8.2.min.js"></script>
+<script src="js/raphael-min.js"></script>
+<script src="js/anchor.js"></script>
+<script>
+$(function(){
+
+    (function(){
+        // Loader
+        var loader = Raphael( 'loader', 6400, 200);
+        var ld = loader.image( 'images/loader.png', 0, 0, 6400, 200 );
+        
+        var step = 200
+            , LI = 0 // Loader Index
+            , SL = 32 // Step Length
+            , timer
+            , timeout = 120
+            , $loader = $('#loader').children();
+
+        function rotate( idx ){
+            LI = idx || LI;
+            LI += 1;
+            if( LI >= SL ) LI = 0;
+            $loader.css({
+                left: -LI*step
+            });
+        }
+
+        rotate( 2 );
+
+        // timer = setInterval(rotate, timeout);
+        function play(){
+            timer = setInterval(rotate, timeout);
+        }
+        function stop(){
+            clearInterval( timer );
+        }
+
+        $('.button-loader a').hover(function(){
+            play();
+        }, function(){
+            stop();
+        });
+
+    })();
+
+    // Slide Nav
+    var $ss = $('.slide-shadow');
+    var $ssd = $ss.find('div');
+    var $nav = $('.nav li');
+    var $span = $('.nav i');
+    var step = 325;
+    var delay = 800;
+
+    $nav.bind('click', function(){
+
+        var $this = $(this);
+
+        if( $this.hasClass('active') ) return false;
+
+        var idx = $this.index();
+
+        $ss.animate({
+            left: step*idx
+        }, delay);
+        
+        $ssd.animate({
+            left: -step*idx
+        }, delay, function(){
+
+            $('.nav .active i').animate({
+                opacity: 0
+            });
+
+            $('i', $this).animate({
+                opacity: 1
+            });
+
+            $nav.filter('.active').removeClass('active');
+
+            $this.addClass('active');
+
+        });           
+
+        return false;
+
+    }).eq(0).trigger('click'); 
+
+    // Tip 切换
+    var tipsConf = [
+        {
+            width: 234
+            , height: 331
+            , img: 'images/f1.png'
+            , left: 0
+            , top: 0
+            , w: 192
+            , h: 272
+            , t: 34
+            , l: 11
+            , txt: 'sss1'
+        }
+        , {
+            width: 245
+            , height: 325
+            , img: 'images/f2.png'
+            , left: 124
+            , top: 7
+            , w: 205
+            , h: 272
+            , t: 34
+            , l: 140
+            , txt: 'sss2'
+        }
+        , {
+            width: 215
+            , height: 322
+            , img: 'images/f3.png'
+            , left: 318
+            , top: 9
+            , w: 181
+            , h: 272
+            , t: 34
+            , l: 331
+            , txt: 'sss3'
+        }
+        , {
+            width: 235
+            , height: 322
+            , img: 'images/f4.png'
+            , left: 467
+            , top: 9
+            , w: 198
+            , h: 272
+            , t: 34
+            , l: 484
+            , txt: 'sss4'
+        }
+        , {
+            width: 237
+            , height: 322
+            , img: 'images/f5.png'
+            , left: 636
+            , top: 9
+            , w: 200
+            , h: 272
+            , t: 34
+            , l: 652
+            , txt: 'sss5'
+        }
+        , {
+            width: 217
+            , height: 322
+            , img: 'images/f6.png'
+            , left: 785
+            , top: 9
+            , w: 183
+            , h: 272
+            , t: 34
+            , l: 798
+            , txt: 'sss6'
+        }
+    ];
+
+    // var anchor = $('#anchor').anchor({ tips: tipsConf }); 
+    $('#anchor').anchor({ tips: tipsConf }); 
+});
+</script>
+</body>
+</html>
